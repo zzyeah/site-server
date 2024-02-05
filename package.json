@@ -1,0 +1,40 @@
+{
+  "name": "site-server",
+  "version": "1.0.0",
+  "description": "blog server",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon -e ts --exec ts-node bin/www.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zzyeah/site-server.git"
+  },
+  "author": "zzyeah",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zzyeah/site-server/issues"
+  },
+  "homepage": "https://github.com/zzyeah/site-server#readme",
+  "dependencies": {
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "express": "~4.16.1",
+    "http-errors": "~1.6.3",
+    "jade": "~1.11.0",
+    "morgan": "~1.9.1",
+    "mysql2": "^3.9.1",
+    "sequelize": "^6.36.0"
+  },
+  "devDependencies": {
+    "@types/cookie-parser": "^1.4.6",
+    "@types/debug": "^4.1.12",
+    "@types/express": "^4.17.21",
+    "@types/http-errors": "^2.0.4",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^20.11.16",
+    "typescript": "^5.3.3"
+  }
+}
