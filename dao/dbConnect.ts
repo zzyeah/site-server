@@ -1,7 +1,7 @@
 import { Sequelize } from "sequelize";
 
-const sequelize = new Sequelize("site", "tt", "123456@Test", {
-  host: "localhost",
+const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASS, {
+  host: process.env.DB_HOST,
   dialect: "mysql",
   //   logging: (msg) => {
   //     //   sqlLogger.debug(msg);
@@ -17,4 +17,6 @@ async function test() {
     console.error("Unable to connect to the database:", error);
   }
 }
+
+test()
 export default sequelize;

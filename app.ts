@@ -3,11 +3,11 @@ import express, { ErrorRequestHandler } from "express";
 import path from "path";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
+import { config } from "dotenv";
 
 // import router
 import indexRouter from "./routes/index";
 import usersRouter from "./routes/users";
-import sequelize from "./dao/dbConnect";
 
 // server instance
 const app = express();
@@ -23,6 +23,9 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
 
+// import sql
+config();
+import './dao/dbConnect';
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
