@@ -1,16 +1,19 @@
+import { config } from "dotenv";
+config();
 import createError from "http-errors";
 import express, { ErrorRequestHandler } from "express";
 import path from "path";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
-import { config } from "dotenv";
+
+// import sql
+import "./dao/db";
 
 // import router
-import indexRouter from "./routes/index";
-import usersRouter from "./routes/users";
+import adminRouter from "./routes/api/admin/admin.api";
 
 // server instance
-const app = express();
+export const app = express();
 
 // middleware
 app.use(logger("dev"));
@@ -20,14 +23,10 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
 // router middleware
-app.use("/", indexRouter);
-app.use("/users", usersRouter);
+app.use("/api/admin", adminRouter);
 
-// import sql
-config();
-import './dao/dbConnect';
 // catch 404 and forward to error handler
-app.use(function (req, res, next) {
+app.use(function (err, req, res, next) {
   next(createError(404));
 });
 
@@ -41,5 +40,3 @@ const errorHandle: ErrorRequestHandler = (err, req, res, next) => {
   res.render("error");
 };
 app.use(errorHandle);
-
-export default app;

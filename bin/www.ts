@@ -2,12 +2,9 @@
 
 const PORT = "4015";
 
-/**
- * Module dependencies.
- */
-
-import app from "../app";
-const debug = require("debug")("site-server:server");
+import { app } from "../app";
+import debug from "debug";
+const Debug = debug("site-server:server");
 import http from "http";
 
 /**
@@ -84,7 +81,6 @@ function onError(error: any) {
 function onListening() {
   const addr = server.address();
   const bind = typeof addr === "string" ? "pipe " + addr : "port " + addr!.port;
-  debug("Listening on " + bind);
+  Debug("Listening on " + bind);
   console.log(`server listening ${PORT}`);
-  
 }

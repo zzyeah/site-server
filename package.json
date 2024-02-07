@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon -e ts --exec ts-node bin/www.ts"
+    "start": "nodemon -e ts --exec node --loader ts-node/esm --inspect --no-warnings bin/www.ts"
   },
   "repository": {
     "type": "git",
@@ -36,6 +36,7 @@
     "@types/http-errors": "^2.0.4",
     "@types/morgan": "^1.9.9",
     "@types/node": "^20.11.16",
+    "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   }
 }
