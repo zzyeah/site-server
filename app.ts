@@ -11,6 +11,9 @@ import "./dao/db";
 
 // import router
 import adminRouter from "./routes/api/admin/admin.api";
+import { expressjwt } from "express-jwt";
+import { md5 } from "./utils/crypto";
+import { ForbiddenError, UnknownError } from "./utils/errors";
 
 // server instance
 export const app = express();
@@ -22,21 +25,33 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
+app.use(
+  expressjwt({
+    secret: md5(process.env.JWT_SECRECT!),
+    algorithms: ["HS256"],
+  }).unless({
+    path: [{ url: "/api/admin/login", methods: ["POST"] }],
+  })
+);
 // router middleware
 app.use("/api/admin", adminRouter);
 
 // catch 404 and forward to error handler
-app.use(function (err, req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 const errorHandle: ErrorRequestHandler = (err, req, res, next) => {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get("env") === "development" ? err : {};
+  if (err) {
+    switch (err.name) {
+      case "UnauthorizedError":
+        res.send(new ForbiddenError("未登陆，或者登陆过期").toResponseJSON());
+        break;
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render("error");
+      default:
+        res.send(new UnknownError("未知错误").toResponseJSON());
+        break;
+    }
+  }
 };
 app.use(errorHandle);

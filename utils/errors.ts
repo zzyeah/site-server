@@ -1,6 +1,8 @@
 // custom error
 // 错误拦截器
 
+import { getResult } from "./apiHandler";
+
 /**
  * 业务处理错误基类
  */
@@ -14,10 +16,11 @@ class ServiceError extends Error {
   }
 
   toResponseJSON() {
-    return {
-      errorMessage: this.message,
-      errorCode: this.code,
-    };
+    return getResult({
+      code: this.code,
+      msg: this.message,
+      data: null
+    });
   }
 }
 

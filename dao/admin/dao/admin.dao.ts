@@ -14,6 +14,7 @@ export class AdminDAO {
     const { loginId, loginPwd } = loginInfo;
     try {
       const data = await AdminModel.findOne({
+        attributes: ["loginId", "name", "id"],
         where: {
           loginId,
           loginPwd,
