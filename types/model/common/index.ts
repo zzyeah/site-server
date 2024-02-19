@@ -1,1 +1,2 @@
-export * from "./commonModel.bean";
+export * from "./model.bean";
+export * from "./request.bean";

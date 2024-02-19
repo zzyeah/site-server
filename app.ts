@@ -15,9 +15,19 @@ import adminRouter from "./routes/api/admin/admin.api";
 import { expressjwt } from "express-jwt";
 import { md5 } from "./utils/crypto";
 import ServiceError, { ForbiddenError, UnknownError } from "./utils/errors";
+import captchaRouter from "./routes/api/captcha/captcha.api";
 
 // server instance
 export const app = express();
+
+import session from "express-session";
+app.use(
+  session({
+    secret: process.env.SESSION_SECRECT!,
+    resave: true,
+    saveUninitialized: true,
+  })
+);
 
 // middleware
 app.use(logger("dev"));
@@ -31,11 +41,15 @@ app.use(
     secret: md5(process.env.JWT_SECRECT!),
     algorithms: ["HS256"],
   }).unless({
-    path: [{ url: "/api/admin/login", methods: ["POST"] }],
+    path: [
+      { url: "/api/admin/login", methods: ["POST"] },
+      { url: "/res/captcha", methods: ["GET"] },
+    ],
   })
 );
 // router middleware
 app.use("/api/admin", adminRouter);
+app.use("/res/captcha", captchaRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

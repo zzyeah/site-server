@@ -2,17 +2,25 @@ import express from "express";
 import adminService from "../../../service/admin.service";
 import { asyncHandler, getResult } from "../../../utils/apiHandler";
 import { parseToken } from "../../../utils/tools";
+import { CommonRequest } from "../../../types/model/common/request.bean";
+import { LoginInfo } from "../../../types";
+import { ValidationError } from "../../../utils/errors";
 
 const adminRouter = express.Router();
 
 /* admin login */
 adminRouter.post(
   "/login",
-  asyncHandler(async (req, res, next) => {
-    // 首先验证验证码
-
-    // 假设验证码通过
+  asyncHandler(async (req: CommonRequest<LoginInfo>, res, next) => {
     const loginInfo = req.body;
+    // 首先验证验证码
+    if (
+      loginInfo.captcha?.toLowerCase() !== req.session["captcha"]?.toLowerCase()
+    ) {
+      // 说明用户输入的验证码不正确
+      throw new ValidationError("验证码不正确");
+    }
+    // 假设验证码通过
     const result = await adminService.login(loginInfo);
     if (result?.token) {
       res.setHeader("authorization", result.token);
