@@ -1,5 +1,5 @@
 import { LoginInfo } from "../../../types";
-import AdminModel from "../model/admin.model";
+import AdminModel, { AdminAttributes } from "../model/admin.model";
 
 // login
 export class AdminDAO {
@@ -24,6 +24,15 @@ export class AdminDAO {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  public async updateAdmin(newAccountInfo: AdminAttributes) {
+    return await AdminModel.update(newAccountInfo, {
+      where: {
+        loginId: newAccountInfo.loginId,
+        id: newAccountInfo.id,
+      },
+    });
   }
 }
 

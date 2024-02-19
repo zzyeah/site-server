@@ -1,9 +1,10 @@
 // admin 模块业务逻辑层
 
 import { sign } from "jsonwebtoken";
-import adminDAO from "../dao/admin/dao/admin.dao";
-import { LoginInfo } from "../types";
+import adminDAO, { AdminDAO } from "../dao/admin/dao/admin.dao";
+import { LoginInfo, updateAdminRequest } from "../types";
 import { md5 } from "../utils/crypto";
+import { ValidationError } from "../utils/errors";
 
 class AdminService {
   public static instance: AdminService;
@@ -44,6 +45,35 @@ class AdminService {
       };
     }
     return { data: result };
+  }
+
+  public async updateAdmin(accountInfo: updateAdminRequest) {
+    // 1. 根据传入的账号信息查询对应的用户（需使用旧密码）
+    const adminInfo = await adminDAO.login({
+      loginId: accountInfo.loginId,
+      loginPwd: md5(accountInfo.oldLoginPwd),
+    });
+    // 2. 两种情况
+    // 有无用户信息
+    if (adminInfo?.dataValues) {
+      // 有用户信息
+      // 合并对象，然后更新
+      const newPwd = md5(accountInfo.loginPwd);
+      await adminDAO.updateAdmin({
+        name: accountInfo.name,
+        loginId: accountInfo.loginId,
+        loginPwd: newPwd,
+        id: adminInfo.dataValues.id,
+      });
+      return {
+        loginId: accountInfo.loginId,
+        name: accountInfo.name,
+        id: adminInfo.dataValues.id,
+      };
+    } else {
+      // 无用户信息
+      throw new ValidationError("旧密码不正确");
+    }
   }
 }
 

@@ -1,5 +1,6 @@
 import { config } from "dotenv";
 config();
+import "express-async-errors";
 import createError from "http-errors";
 import express, { ErrorRequestHandler } from "express";
 import path from "path";
@@ -13,7 +14,7 @@ import "./dao/db";
 import adminRouter from "./routes/api/admin/admin.api";
 import { expressjwt } from "express-jwt";
 import { md5 } from "./utils/crypto";
-import { ForbiddenError, UnknownError } from "./utils/errors";
+import ServiceError, { ForbiddenError, UnknownError } from "./utils/errors";
 
 // server instance
 export const app = express();
@@ -43,14 +44,12 @@ app.use(function (req, res, next) {
 
 const errorHandle: ErrorRequestHandler = (err, req, res, next) => {
   if (err) {
-    switch (err.name) {
-      case "UnauthorizedError":
-        res.send(new ForbiddenError("未登陆，或者登陆过期").toResponseJSON());
-        break;
-
-      default:
-        res.send(new UnknownError("未知错误").toResponseJSON());
-        break;
+    if (err.name === "UnauthorizedError") {
+      res.send(new ForbiddenError("未登陆，或者登陆过期").toResponseJSON());
+    } else if (err instanceof ServiceError) {
+      res.send(err.toResponseJSON());
+    } else {
+      res.send(new UnknownError("未知错误").toResponseJSON());
     }
   }
 };

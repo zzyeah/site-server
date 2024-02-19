@@ -1,1 +1,2 @@
-export * from "./admin";
+export * from "./model/admin";
+export * from "./model/common";
