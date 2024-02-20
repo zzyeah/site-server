@@ -3,26 +3,31 @@ import sequelize from "../../dbConnect";
 import { SqlBaseAttributes, SqlModelInstance } from "../../../types";
 
 // 定义用户自定义属性接口
-export interface AdminAttributes extends SqlBaseAttributes {
-  loginId: string;
-  name: string;
-  loginPwd: string;
+export interface BannerAttributes extends SqlBaseAttributes {
+  midImg: string;
+  bigImg: string;
+  title: string;
+  description: string;
 }
 
 // 创建一个类型声明，将sequelize.define的结果转换为静态类类型
-const AdminModel = sequelize.define<SqlModelInstance<AdminAttributes>>(
-  "admin",
+const BannerModel = sequelize.define<SqlModelInstance<BannerAttributes>>(
+  "banner",
   {
     // 表的字段
-    loginId: {
+    midImg: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    name: {
+    bigImg: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    loginPwd: {
+    title: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    description: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -34,4 +39,4 @@ const AdminModel = sequelize.define<SqlModelInstance<AdminAttributes>>(
   }
 );
 
-export default AdminModel;
+export default BannerModel;

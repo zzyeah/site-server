@@ -3,7 +3,7 @@ import adminService from "../../../service/admin.service";
 import { asyncHandler, getResult } from "../../../utils/apiHandler";
 import { parseToken } from "../../../utils/tools";
 import { CommonRequest } from "../../../types/model/common/request.bean";
-import { LoginInfo } from "../../../types";
+import { LoginInfo, updateAdminRequest } from "../../../types";
 import { ValidationError } from "../../../utils/errors";
 
 const adminRouter = express.Router();
@@ -48,7 +48,7 @@ adminRouter.get(
 
 adminRouter.put(
   "/",
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req: CommonRequest<updateAdminRequest>, res, next) => {
     return await adminService.updateAdmin(req.body);
   })
 );

@@ -12,10 +12,11 @@ import "./dao/db";
 
 // import router
 import adminRouter from "./routes/api/admin/admin.api";
+import bannerRouter from "./routes/api/banner/banner.api";
+import captchaRouter from "./routes/api/captcha/captcha.api";
 import { expressjwt } from "express-jwt";
 import { md5 } from "./utils/crypto";
 import ServiceError, { ForbiddenError, UnknownError } from "./utils/errors";
-import captchaRouter from "./routes/api/captcha/captcha.api";
 
 // server instance
 export const app = express();
@@ -44,11 +45,13 @@ app.use(
     path: [
       { url: "/api/admin/login", methods: ["POST"] },
       { url: "/res/captcha", methods: ["GET"] },
+      { url: "/api/banner", methods: ["GET"] },
     ],
   })
 );
 // router middleware
 app.use("/api/admin", adminRouter);
+app.use("/api/banner", bannerRouter);
 app.use("/res/captcha", captchaRouter);
 
 // catch 404 and forward to error handler
