@@ -22,6 +22,7 @@ import ServiceError, { ForbiddenError, UnknownError } from "./utils/errors";
 export const app = express();
 
 import session from "express-session";
+import uploadRouter from "./routes/api/upload/upload.api";
 app.use(
   session({
     secret: process.env.SESSION_SECRECT!,
@@ -46,12 +47,14 @@ app.use(
       { url: "/api/admin/login", methods: ["POST"] },
       { url: "/res/captcha", methods: ["GET"] },
       { url: "/api/banner", methods: ["GET"] },
+      // { url: "/api/upload", methods: ["POST"] },
     ],
   })
 );
 // router middleware
 app.use("/api/admin", adminRouter);
 app.use("/api/banner", bannerRouter);
+app.use("/api/upload", uploadRouter);
 app.use("/res/captcha", captchaRouter);
 
 // catch 404 and forward to error handler
