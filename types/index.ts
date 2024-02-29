@@ -1,2 +1,2 @@
-export * from "./model/admin";
-export * from "./model/common";
+export * from "./model";
+export * from "./validatejs";

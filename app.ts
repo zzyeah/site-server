@@ -23,6 +23,7 @@ export const app = express();
 
 import session from "express-session";
 import uploadRouter from "./routes/api/upload/upload.api";
+import blogTypeRouter from "./routes/api/blog/blogType/blogType.api";
 app.use(
   session({
     secret: process.env.SESSION_SECRECT!,
@@ -55,6 +56,7 @@ app.use(
 app.use("/api/admin", adminRouter);
 app.use("/api/banner", bannerRouter);
 app.use("/api/upload", uploadRouter);
+app.use("/api/blogtype", blogTypeRouter);
 app.use("/res/captcha", captchaRouter);
 
 // catch 404 and forward to error handler
