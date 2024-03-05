@@ -3,8 +3,8 @@
 import validate from "validate.js";
 import { Constraints } from "../types";
 import { ValidationError } from "../utils/errors";
-import blogTypeDAO from "../dao/blog/dao/blogType.dao";
-import { BlogTypeAttributes } from "../dao/blog/model/blogType.model";
+import blogTypeDAO from "../dao/blogType/dao/blogType.dao";
+import { BlogTypeAttributes } from "../dao/blogType/model/blogType.model";
 
 class BlogTypeService {
   public static instance: BlogTypeService;
@@ -16,7 +16,7 @@ class BlogTypeService {
   }
 
   // 新增博客分类
-  async addBlogType(newBlogTypeInfo: any) {
+  async addBlogType(newBlogTypeInfo: BlogTypeAttributes) {
     // 数据验证规则
     const blogTypeRules: Constraints = {
       name: {

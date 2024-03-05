@@ -2,7 +2,7 @@ import express from "express";
 import adminService from "../../../service/admin.service";
 import { asyncHandler, getResult } from "../../../utils/apiHandler";
 import { parseToken } from "../../../utils/tools";
-import { CommonRequest } from "../../../types/model/common/request.bean";
+import { CommonRequest } from "../../../types/api/common/request.bean";
 import { LoginInfo, updateAdminRequest } from "../../../types";
 import { ValidationError } from "../../../utils/errors";
 

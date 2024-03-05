@@ -2,7 +2,7 @@ import sequelize from "./dbConnect";
 import AdminModel from "./admin/model/admin.model";
 import { md5 } from "../utils/crypto";
 import BannerModel from "./banner/model/banner.model";
-import "./blog/model/blogType.model";
+import './common/relationship';
 
 // 初始化数据库
 sequelize

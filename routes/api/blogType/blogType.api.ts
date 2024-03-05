@@ -1,6 +1,6 @@
 import express from "express";
-import { asyncHandler } from "../../../../utils/apiHandler";
-import blogTypeService from "../../../../service/blogType.service";
+import { asyncHandler } from "../../../utils/apiHandler";
+import blogTypeService from "../../../service/blogType.service";
 
 const blogTypeRouter = express.Router();
 

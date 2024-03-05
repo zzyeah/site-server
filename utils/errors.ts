@@ -19,7 +19,7 @@ class ServiceError extends Error {
     return getResult({
       code: this.code,
       msg: this.message,
-      data: null
+      data: null,
     });
   }
 }
@@ -48,13 +48,13 @@ export class ValidationError extends ServiceError {
 // 无资源错误
 export class NotFoundError extends ServiceError {
   constructor(message) {
-    super("not found ", 406);
+    super(message, 406);
   }
 }
 // 未知错误
 export class UnknownError extends ServiceError {
   constructor(message) {
-    super("server interval error ", 500);
+    super("server interval error", 500);
   }
 }
 

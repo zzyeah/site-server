@@ -1,4 +1,3 @@
-import { log } from "console";
 import BlogTypeModel, { BlogTypeAttributes } from "../model/blogType.model";
 
 export class BlogTypeDAO {
@@ -10,7 +9,7 @@ export class BlogTypeDAO {
   }
 
   // 添加博客类型
-  async addBlogType(newBlogTypeInfo) {
+  async addBlogType(newBlogTypeInfo: BlogTypeAttributes) {
     const { dataValues } = await BlogTypeModel.create(newBlogTypeInfo);
     return dataValues;
   }
@@ -42,6 +41,17 @@ export class BlogTypeDAO {
         id,
       },
     });
+  }
+
+  // 根据id新增对应博客分类的文章数量
+  async addBlogToType(id: number) {
+    const blogType = await BlogTypeModel.findByPk(id);
+    blogType?.setDataValue(
+      "articleCount",
+      blogType?.dataValues.articleCount || 0 + 1
+    );
+    await blogType!.save();
+    return;
   }
 }
 

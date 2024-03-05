@@ -80,6 +80,10 @@ export type ConfirmationConstraint = BaseConstraint & {
   message?: string;
 };
 
+export type CustomDefinitionConstraint = {
+  [key: string]: any;
+};
+
 // 合并所有约束为联合类型
 export type SingleFieldConstraint =
   | PresenceConstraint
@@ -99,7 +103,8 @@ export type SingleFieldConstraint =
   | EqualityConstraint
   | AllowBlankConstraint
   | AllowEmptyConstraint
-  | ConfirmationConstraint;
+  | ConfirmationConstraint
+  | CustomDefinitionConstraint;
 
 // 自定义验证函数接口
 export type CustomValidationFunction = (
