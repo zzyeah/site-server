@@ -7,13 +7,14 @@ import {
   FindBlogByPageRequest,
 } from "../../../types";
 import { BlogAttributes } from "../../../dao/blog/model/blog.model";
+import { Blog } from "types/blog/blog.bean";
 
 const blogRouter = express.Router();
 
 // 添加博客
 blogRouter.post(
   "/",
-  asyncHandler(async (req: CommonRequest<BlogAttributes>, res, next) => {
+  asyncHandler(async (req: CommonRequest<Blog>, res, next) => {
     return await blogService.addBlog(req.body);
   })
 );

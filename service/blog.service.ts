@@ -9,6 +9,8 @@ import BlogTypeModel, {
 import { BlogAttributes } from "../dao/blog/model/blog.model";
 import { NotFoundError, UnknownError, ValidationError } from "../utils/errors";
 import blogDAO from "../dao/blog/dao/blog.dao";
+import { Blog2BlogAttr, handleTOC } from "../utils/tools";
+import { Blog } from "types/blog/blog.bean";
 
 validate.validators.categoryIdIsExist = async function (id) {
   const info = await BlogTypeModel.findByPk(id);
@@ -25,24 +27,15 @@ class BlogService {
   }
 
   // 新增博客
-  async addBlog(newBlogInfo: BlogAttributes) {
+  async addBlog(newBlogInfo: Blog) {
     // 处理toc
+    newBlogInfo = handleTOC(newBlogInfo);
 
-    // 将处理结果转成字符串
-    if (newBlogInfo.toc) {
-      newBlogInfo.toc = JSON.stringify(newBlogInfo.toc);
-    } else {
-      // mock data
-      newBlogInfo.toc = JSON.stringify([
-        {
-          a: "b",
-        },
-      ]);
-    }
+    const blog: BlogAttributes = Blog2BlogAttr(newBlogInfo);
 
     // 初始化文章信息
-    newBlogInfo.scanNumber = 0; // 阅读量初始化为0
-    newBlogInfo.commentNumber = 0; // 评论数初始化为0
+    blog.scanNumber = 0; // 阅读量初始化为0
+    blog.commentNumber = 0; // 评论数初始化为0
 
     // 定义验证规则
     const constraints: Constraints = {
@@ -103,10 +96,10 @@ class BlogService {
 
     // 验证数据
     try {
-      await validate.async(newBlogInfo, constraints);
-      const data = await blogDAO.addBlog(newBlogInfo);
+      await validate.async(blog, constraints);
+      const data = await blogDAO.addBlog(blog);
       // 新增博客分类
-      await blogTypeDAO.addBlogToType(newBlogInfo.categoryId!);
+      await blogTypeDAO.addBlogToType(blog.categoryId!);
       return data;
     } catch (err) {
       throw new ValidationError("数据验证失败");
@@ -142,14 +135,15 @@ class BlogService {
   }
 
   // 修改单个博客
-  async updateBlog(id: string, newBlogInfo: BlogAttributes) {
+  async updateBlog(id: string, newBlogInfo: Blog) {
     // 判断正文内容有无改变，因为正文内容影响TOC
     // 判断是否有TOC，有则处理
     if (newBlogInfo.htmlContent) {
       // 有新增内容，需要重新处理TOC
-      newBlogInfo.toc = JSON.stringify(newBlogInfo.toc);
+      newBlogInfo = handleTOC(newBlogInfo);
     }
-    const data = await blogDAO.updateBlog(id, newBlogInfo);
+    const blogInfo = Blog2BlogAttr(newBlogInfo);
+    const data = await blogDAO.updateBlog(id, blogInfo);
     if (!data) throw new NotFoundError("更新失败");
     return data.dataValues;
   }

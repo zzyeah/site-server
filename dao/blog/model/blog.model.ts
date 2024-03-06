@@ -3,10 +3,13 @@ import sequelize from "../../dbConnect";
 import { SqlBaseAttributes, SqlModelInstance } from "../../../types";
 
 // 定义用户自定义属性接口
-export interface BlogAttributes extends SqlBaseAttributes {
+export interface BlogAttributes extends BlogCommonInfo {
+  toc: string;
+}
+
+export interface BlogCommonInfo extends SqlBaseAttributes {
   title: string;
   description: string;
-  toc: string;
   htmlContent: string;
   thumb: string;
   scanNumber: number;
@@ -14,6 +17,7 @@ export interface BlogAttributes extends SqlBaseAttributes {
   createDate: string;
   categoryId?: number;
 }
+
 
 // 创建一个类型声明，将sequelize.define的结果转换为静态类类型
 const BlogModel = sequelize.define<SqlModelInstance<BlogAttributes>>(
