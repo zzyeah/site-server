@@ -25,6 +25,7 @@ import session from "express-session";
 import uploadRouter from "./routes/api/upload/upload.api";
 import blogTypeRouter from "./routes/api/blogType/blogType.api";
 import blogRouter from "./routes/api/blog/blog.api";
+import demoRouter from "./routes/api/demo/demo.api";
 app.use(
   session({
     secret: process.env.SESSION_SECRECT!,
@@ -52,6 +53,7 @@ app.use(
       { url: "/api/blogtype", methods: ["GET"] },
       { url: "/api/blog", methods: ["GET"] },
       { url: /\/api\/blog\/\d/, methods: ["GET"] },
+      { url: "/api/project", methods: ["GET"] },
     ],
   })
 );
@@ -61,6 +63,7 @@ app.use("/api/banner", bannerRouter);
 app.use("/api/upload", uploadRouter);
 app.use("/api/blogtype", blogTypeRouter);
 app.use("/api/blog", blogRouter);
+app.use("/api/project", demoRouter);
 app.use("/res/captcha", captchaRouter);
 
 // catch 404 and forward to error handler

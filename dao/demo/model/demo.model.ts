@@ -1,42 +1,35 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../../dbConnect";
-import { BlogAttributes, SqlModelInstance } from "../../../types";
+import { DemoAttributes, SqlModelInstance } from "../../../types";
+
 
 // 创建一个类型声明，将sequelize.define的结果转换为静态类类型
-const BlogModel = sequelize.define<SqlModelInstance<BlogAttributes>>(
-  "blog",
+const DemoModel = sequelize.define<SqlModelInstance<DemoAttributes>>(
+  "demo",
   {
     // 表的字段
-    title: {
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    url: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    github: {
       type: DataTypes.STRING,
       allowNull: false,
     },
     description: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    toc: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    htmlContent: {
-      type: DataTypes.TEXT,
+      type: DataTypes.STRING,
       allowNull: false,
     },
     thumb: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    scanNumber: {
+    order: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    commentNumber: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    createDate: {
-      type: DataTypes.STRING,
       allowNull: false,
     },
   },
@@ -47,4 +40,4 @@ const BlogModel = sequelize.define<SqlModelInstance<BlogAttributes>>(
   }
 );
 
-export default BlogModel;
+export default DemoModel;

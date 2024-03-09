@@ -1,16 +1,18 @@
 // blog 模块业务逻辑层
 
 import validate from "validate.js";
-import { Constraints, FindBlogByPageQuery } from "../types";
+import {
+  Blog,
+  BlogAttributes,
+  BlogCommonInfo,
+  Constraints,
+  FindBlogByPageQuery,
+} from "../types";
 import blogTypeDAO from "../dao/blogType/dao/blogType.dao";
-import BlogTypeModel, {
-  BlogTypeAttributes,
-} from "../dao/blogType/model/blogType.model";
-import { BlogAttributes } from "../dao/blog/model/blog.model";
-import { NotFoundError, UnknownError, ValidationError } from "../utils/errors";
+import BlogTypeModel from "../dao/blogType/model/blogType.model";
+import { NotFoundError, ValidationError } from "../utils/errors";
 import blogDAO from "../dao/blog/dao/blog.dao";
-import { Blog2BlogAttr, handleTOC } from "../utils/tools";
-import { Blog } from "types/blog/blog.bean";
+import { array2String, handleTOC } from "../utils/tools";
 
 validate.validators.categoryIdIsExist = async function (id) {
   const info = await BlogTypeModel.findByPk(id);
@@ -31,7 +33,11 @@ class BlogService {
     // 处理toc
     newBlogInfo = handleTOC(newBlogInfo);
 
-    const blog: BlogAttributes = Blog2BlogAttr(newBlogInfo);
+    const blog: BlogAttributes = array2String<
+      BlogCommonInfo,
+      Blog,
+      BlogAttributes
+    >(newBlogInfo, ["toc"]);
 
     // 初始化文章信息
     blog.scanNumber = 0; // 阅读量初始化为0
@@ -142,7 +148,10 @@ class BlogService {
       // 有新增内容，需要重新处理TOC
       newBlogInfo = handleTOC(newBlogInfo);
     }
-    const blogInfo = Blog2BlogAttr(newBlogInfo);
+    const blogInfo = array2String<BlogCommonInfo, Blog, BlogAttributes>(
+      newBlogInfo,
+      ["toc"]
+    );
     const data = await blogDAO.updateBlog(id, blogInfo);
     if (!data) throw new NotFoundError("更新失败");
     return data.dataValues;

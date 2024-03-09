@@ -1,6 +1,6 @@
-import { FindBlogByPageQuery } from "../../../types";
+import { BlogAttributes, FindBlogByPageQuery } from "../../../types";
 import BlogTypeModel from "../../blogType/model/blogType.model";
-import BlogModel, { BlogAttributes } from "../model/blog.model";
+import BlogModel from "../model/blog.model";
 
 export class BlogDAO {
   public static instance: BlogDAO = new BlogDAO();

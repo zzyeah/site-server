@@ -10,7 +10,7 @@ export const getResult = function (result: ResponseOptions) {
   return {
     code: result.code || 0,
     msg: result.msg || "",
-    data: result.data || null,
+    data: typeof result.data === "boolean" ? result.data : result.data || null,
   };
 };
 

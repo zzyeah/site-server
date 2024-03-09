@@ -2,9 +2,14 @@ import { verify } from "jsonwebtoken";
 import { md5 } from "./crypto";
 import multer, { diskStorage } from "multer";
 import path from "path";
-import { BlogAttributes } from "../dao/blog/model/blog.model";
 import toc, { Token } from "markdown-toc";
-import { Blog } from "types/blog/blog.bean";
+import {
+  Blog,
+  BlogAttributes,
+  Demo,
+  DemoAttributes,
+  DemoCommonInfo,
+} from "../types";
 
 export function parseToken(token: string | undefined) {
   if (!token) {
@@ -185,11 +190,34 @@ export function handleTOC(blogInfo: Blog): Blog {
   return blogInfo;
 }
 
-export function Blog2BlogAttr(blog: Blog): BlogAttributes {
-  return Object.assign(
-    {
-      toc: JSON.stringify(blog.toc || []),
-    },
-    blog
-  );
+export function array2String<T, K extends T, V extends T>(
+  instance: Partial<K>,
+  keys: (keyof K & keyof V & string)[]
+): V {
+  const obj: {
+    [key: string]: string;
+  } = {};
+  for (const key of keys) {
+    const target = instance[key];
+    if (!target) continue;
+    obj[key] = JSON.stringify(target);
+  }
+
+  return Object.assign({}, instance, obj) as V;
+}
+
+export function string2Array<T, K extends T, V extends T>(
+  instance: Partial<K>,
+  keys: (keyof K & keyof V & string)[]
+): V {
+  const obj: {
+    [key: string]: any[];
+  } = {};
+  for (const key of keys) {
+    const target = instance[key];
+    if (!target) continue;
+    if (typeof target === "string") obj[key] = JSON.parse(target);
+  }
+
+  return Object.assign({}, instance, obj) as V;
 }

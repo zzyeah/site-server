@@ -1,4 +1,4 @@
-export interface updateAdminRequest {
+export interface updateAdminRequest  {
   name: string;
   loginId: string;
   loginPwd: string;
