@@ -34,11 +34,11 @@ class BlogTypeService {
     };
 
     // 进行数据验证
-    const validateResult = validate(newBlogTypeInfo, blogTypeRules);
-    if (!validateResult) {
+    try {
+      await validate.async(newBlogTypeInfo, blogTypeRules);
       newBlogTypeInfo.articleCount = 0;
       return await blogTypeDAO.addBlogType(newBlogTypeInfo);
-    } else {
+    } catch (err) {
       throw new ValidationError("数据验证失败");
     }
   }

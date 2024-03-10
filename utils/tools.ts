@@ -3,13 +3,10 @@ import { md5 } from "./crypto";
 import multer, { diskStorage } from "multer";
 import path from "path";
 import toc, { Token } from "markdown-toc";
-import {
-  Blog,
-  BlogAttributes,
-  Demo,
-  DemoAttributes,
-  DemoCommonInfo,
-} from "../types";
+import { Blog } from "../types";
+import { PathLike } from "fs";
+import { UnknownError } from "./errors";
+import { readdir } from "fs/promises";
 
 export function parseToken(token: string | undefined) {
   if (!token) {
@@ -220,4 +217,17 @@ export function string2Array<T, K extends T, V extends T>(
   }
 
   return Object.assign({}, instance, obj) as V;
+}
+
+/**
+ * 读取一个目录有多少个文件
+ * @param dir 目录地址
+ */
+export async function readDirLength(dir: PathLike) {
+  try {
+    const files = await readdir(dir);
+    return files;
+  } catch (error) {
+    throw new UnknownError(error);
+  }
 }

@@ -26,6 +26,7 @@ import uploadRouter from "./routes/api/upload/upload.api";
 import blogTypeRouter from "./routes/api/blogType/blogType.api";
 import blogRouter from "./routes/api/blog/blog.api";
 import demoRouter from "./routes/api/demo/demo.api";
+import messageRouter from "./routes/api/message/message.api";
 app.use(
   session({
     secret: process.env.SESSION_SECRECT!,
@@ -54,6 +55,8 @@ app.use(
       { url: "/api/blog", methods: ["GET"] },
       { url: /\/api\/blog\/\d/, methods: ["GET"] },
       { url: "/api/project", methods: ["GET"] },
+      { url: "/api/message", methods: ["GET", "POST"] },
+      { url: "/api/comment", methods: ["GET", "POST"] },
     ],
   })
 );
@@ -65,6 +68,8 @@ app.use("/api/blogtype", blogTypeRouter);
 app.use("/api/blog", blogRouter);
 app.use("/api/project", demoRouter);
 app.use("/res/captcha", captchaRouter);
+app.use("/api/message", messageRouter);
+app.use("/api/comment", messageRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
