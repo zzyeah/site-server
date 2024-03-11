@@ -2,7 +2,7 @@ import express from "express";
 import demoService from "../../../service/demo.service";
 import { asyncHandler } from "../../../utils";
 import messageService from "../../../service/message.service";
-import { CommonRequest } from "../../../types";
+import { CommonRequest, FindMessageByPageRequest } from "../../../types";
 import { MessageAttributes } from "../../../dao/message/model/message.model";
 
 const messageRouter = express.Router();
@@ -10,8 +10,8 @@ const messageRouter = express.Router();
 // 获取留言或者评论
 messageRouter.get(
   "/",
-  asyncHandler(async (req, res, next) => {
-    return await demoService.findAllDemo();
+  asyncHandler(async (req: FindMessageByPageRequest, res, next) => {
+    return await messageService.findMessageByPage(req.query);
   })
 );
 
@@ -27,7 +27,7 @@ messageRouter.post(
 messageRouter.delete(
   "/:id",
   asyncHandler(async (req, res, next) => {
-    return await demoService.deleteDemo(req.params.id);
+    return await messageService.deleteMessage(req.params.id);
   })
 );
 

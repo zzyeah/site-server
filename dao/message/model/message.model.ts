@@ -8,7 +8,7 @@ export interface MessageAttributes extends SqlBaseAttributes {
   content: string;
   createDate: number;
   avatar: string;
-  blogId?: string;
+  blogId?: string | null;
 }
 
 // 创建一个类型声明，将sequelize.define的结果转换为静态类类型
@@ -25,7 +25,7 @@ const MessageModel = sequelize.define<SqlModelInstance<MessageAttributes>>(
       allowNull: false,
     },
     createDate: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.BIGINT,
       allowNull: false,
     },
     avatar: {

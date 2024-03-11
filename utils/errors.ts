@@ -58,4 +58,10 @@ export class UnknownError extends ServiceError {
   }
 }
 
+export class SQLExcuteError extends ServiceError {
+  constructor(message) {
+    super(message, 406);
+  }
+}
+
 export default ServiceError;
