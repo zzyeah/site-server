@@ -79,6 +79,13 @@ export class BlogDAO {
     });
   }
 
+  async blogCountByCategoryId(categoryId: string) {
+    return await BlogModel.count({
+      where: {
+        categoryId,
+      },
+    });
+  }
 }
 
 const blogDAO = BlogDAO.getInstance();

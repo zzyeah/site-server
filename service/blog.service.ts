@@ -13,6 +13,7 @@ import BlogTypeModel from "../dao/blogType/model/blogType.model";
 import { NotFoundError, ValidationError } from "../utils/errors";
 import blogDAO from "../dao/blog/dao/blog.dao";
 import { array2String, handleTOC } from "../utils/tools";
+import messageDAO from "../dao/message/dao/message.dao";
 
 validate.validators.categoryIdIsExist = async function (id) {
   const info = await BlogTypeModel.findByPk(id);
@@ -152,6 +153,32 @@ class BlogService {
       newBlogInfo,
       ["toc"]
     );
+
+    // 文章分类修改
+    const blogById = await blogDAO.findBlogById(id);
+    if (blogById) {
+      const { dataValues } = blogById;
+      if (dataValues.categoryId !== blogInfo.categoryId) {
+        // 修改文章分类
+        const oldCategoryId = await blogTypeDAO.findOneBlogType(
+          dataValues.categoryId
+        );
+        oldCategoryId?.setDataValue(
+          "articleCount",
+          oldCategoryId.dataValues.articleCount - 1
+        );
+        await oldCategoryId?.save();
+        const newCategoryId = await blogTypeDAO.findOneBlogType(
+          blogInfo.categoryId
+        );
+        newCategoryId?.setDataValue(
+          "articleCount",
+          newCategoryId.dataValues.articleCount + 1
+        );
+        await newCategoryId?.save();
+      }
+    }
+
     const data = await blogDAO.updateBlog(id, blogInfo);
     if (!data) throw new NotFoundError("更新失败");
     return data.dataValues;
@@ -172,7 +199,7 @@ class BlogService {
     );
     await categoryInfo.save();
     // 删除该文章的所有评论
-
+    await messageDAO.deleteMessageByBlogId(id);
     const count = await blogDAO.deleteBlog(id);
     return true;
   }

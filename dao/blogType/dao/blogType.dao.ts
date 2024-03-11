@@ -48,7 +48,7 @@ export class BlogTypeDAO {
     const blogType = await BlogTypeModel.findByPk(id);
     blogType?.setDataValue(
       "articleCount",
-      blogType?.dataValues.articleCount || 0 + 1
+      (blogType?.dataValues.articleCount || 0) + 1
     );
     await blogType!.save();
     return;

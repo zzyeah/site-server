@@ -75,12 +75,25 @@ export class MessageDAO {
     }
   }
 
-  // 删除留言或者评论
+  // 删除 messageId 对应留言或者评论
   async deleteMessage(id: string) {
     try {
       return await MessageModel.destroy({
         where: {
           id,
+        },
+      });
+    } catch (error) {
+      throw new SQLExcuteError(error);
+    }
+  }
+
+  // 根据 blogId 留言或者评论
+  async deleteMessageByBlogId(blogId: string) {
+    try {
+      return await MessageModel.destroy({
+        where: {
+          blogId,
         },
       });
     } catch (error) {

@@ -2,7 +2,9 @@ import sequelize from "./dbConnect";
 import AdminModel from "./admin/model/admin.model";
 import { md5 } from "../utils/crypto";
 import BannerModel from "./banner/model/banner.model";
-import './common/relationship';
+import "./common/relationship";
+import SettingModel from "./setting/model/setting.model";
+import aboutModel from "./about/model/about.model";
 
 // 初始化数据库
 sequelize
@@ -52,6 +54,35 @@ sequelize
         },
       ]);
       console.log("初始化首页标语数据...");
+    }
+
+    // 进行一些数据初始化
+    const aboutCount = await aboutModel.count(); // 首先进行查询看有没有数据
+    if (!aboutCount) {
+      // 如果没有数据就进行初始化
+      await aboutModel.create({
+        url: "https://oss.duyiedu.com/demo-summary/网页简历/index.html",
+      });
+      console.log("初始化关于我数据...");
+    }
+
+    const settingCount = await SettingModel.count();
+    if (!settingCount) {
+      // 如果没有数据就进行初始化
+      await SettingModel.create({
+        avatar: "/static/images/avatar.jpeg",
+        siteTitle: "我的个人空间",
+        github: "zzyeah",
+        qq: "541767316",
+        qqQrCode: "/static/images/zuotian9652.jpg",
+        weixin: "13760809972",
+        weixinQrCode: "/static/images/zuotian9652.jpg",
+        mail: "541767316@qq.com",
+        icp: "黑ICP备17001719号",
+        githubName: "zzyeah",
+        favicon: "http://mdrs.yuanjin.tech/Fs4CDlC6mwe_WXLMIiXcmSJLHO4f",
+      });
+      console.log("初始化全局设置数据...");
     }
 
     console.log("数据库数据准备完毕");

@@ -5,6 +5,7 @@ import { Constraints } from "../types";
 import { ValidationError } from "../utils/errors";
 import blogTypeDAO from "../dao/blogType/dao/blogType.dao";
 import { BlogTypeAttributes } from "../dao/blogType/model/blogType.model";
+import blogDAO from "../dao/blog/dao/blog.dao";
 
 class BlogTypeService {
   public static instance: BlogTypeService;
@@ -62,9 +63,10 @@ class BlogTypeService {
 
   // 删除单个博客分类
   async deleteOneBlogType(id: string) {
-    await blogTypeDAO.deleteOneBlogType(id);
     // 需要返回受影响的文章数量
-    return true;
+    const count = await blogDAO.blogCountByCategoryId(id);
+    await blogTypeDAO.deleteOneBlogType(id);
+    return count;
   }
 }
 
