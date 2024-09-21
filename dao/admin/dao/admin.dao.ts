@@ -34,6 +34,10 @@ export class AdminDAO {
       },
     });
   }
+
+  public async getAdminList() {
+    return await AdminModel.findAll();
+  }
 }
 
 const adminDAO = AdminDAO.getInstance();

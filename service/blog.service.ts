@@ -46,54 +46,63 @@ class BlogService {
 
     // 定义验证规则
     const constraints: Constraints = {
+      // 文章标题
       title: {
         presence: {
           allowEmpty: false,
         },
         type: "string",
       },
+      // 文章描述
       description: {
         presence: {
           allowEmpty: true,
         },
         type: "string",
       },
+      // 目录
       toc: {
         presence: {
           allowEmpty: true,
         },
         type: "string",
       },
+      // 正文
       htmlContent: {
         presence: {
           allowEmpty: false,
         },
         type: "string",
       },
+      // 缩略图
       thumb: {
         presence: {
           allowEmpty: true,
         },
         type: "string",
       },
+      // 浏览次数
       scanNumber: {
         presence: {
-          allowEmpty: false,
+          allowEmpty: true,
         },
         type: "integer",
       },
+      // 评论量
       commentNumber: {
         presence: {
-          allowEmpty: false,
+          allowEmpty: true,
         },
         type: "integer",
       },
+      // 发布日期, 时间戳
       createDate: {
         presence: {
           allowEmpty: false,
         },
         type: "integer",
       },
+      //分类ID
       categoryId: {
         presence: true,
         type: "integer",
@@ -109,7 +118,7 @@ class BlogService {
       await blogTypeDAO.addBlogToType(blog.categoryId!);
       return data;
     } catch (err) {
-      throw new ValidationError("数据验证失败");
+      throw new ValidationError(`数据验证失败`);
     }
   }
 

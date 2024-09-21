@@ -24,7 +24,6 @@ class ServiceError extends Error {
   }
 }
 
-// throw new ServiceError("aaa", 1);
 // 文件上传错误
 export class UploadError extends ServiceError {
   constructor(message) {

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { asyncHandler, getResult } from "../../../utils/apiHandler";
+import { getResult } from "../../../utils/apiHandler";
 import { CommonRequest } from "../../../types";
 import { uploading } from "../../../utils/tools";
 import { MulterError } from "multer";

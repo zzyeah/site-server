@@ -1,5 +1,4 @@
 import express from "express";
-import { asyncHandler } from "../../../utils/apiHandler";
 import captchaService from "../../../service/captcha.service";
 
 const captchaRouter = express.Router();

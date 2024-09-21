@@ -53,4 +53,11 @@ adminRouter.put(
   })
 );
 
+adminRouter.get(
+  "/",
+  asyncHandler(async(req,res,next)=>{
+    return await adminService.getAdminList();
+  })
+)
+
 export default adminRouter;

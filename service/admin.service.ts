@@ -4,7 +4,8 @@ import { sign } from "jsonwebtoken";
 import adminDAO, { AdminDAO } from "../dao/admin/dao/admin.dao";
 import { LoginInfo, updateAdminRequest } from "../types";
 import { md5 } from "../utils/crypto";
-import { ValidationError } from "../utils/errors";
+import { ForbiddenError, ValidationError } from "../utils/errors";
+import { AdminAttributes } from "../dao/admin/model/admin.model";
 
 class AdminService {
   public static instance: AdminService;
@@ -18,7 +19,7 @@ class AdminService {
     loginInfo.loginPwd = md5(loginInfo.loginPwd);
     // 接下来进行数据的验证 => 查询数据库数据
     const data = await adminDAO.login(loginInfo);
-    let result: any = null;
+    let result:AdminAttributes | null = null;
     if (data?.dataValues) {
       result = data.dataValues;
       let loginPeriod: number = 1;
@@ -64,6 +65,8 @@ class AdminService {
         loginId: accountInfo.loginId,
         loginPwd: newPwd,
         id: adminInfo.dataValues.id,
+        avatar: adminInfo.dataValues.avatar,
+        permission: adminInfo.dataValues.permission
       });
       return {
         loginId: accountInfo.loginId,
@@ -74,6 +77,10 @@ class AdminService {
       // 无用户信息
       throw new ValidationError("旧密码不正确");
     }
+  }
+
+  public async getAdminList(){
+    return adminDAO.getAdminList();
   }
 }
 

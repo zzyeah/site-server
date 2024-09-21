@@ -26,6 +26,7 @@ sequelize
         loginId: "zy",
         name: "administrator",
         loginPwd: md5("123456"),
+        permission: 1
       });
       console.log("初始化管理员信息完毕", md5("123"));
     }
