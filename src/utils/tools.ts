@@ -35,17 +35,22 @@ const storage = diskStorage({
   },
   // 上传到服务器的文件，文件名要做单独处理
   filename: (req, file, cb) => {
+    console.log('file',file);
+    
     // 获取文件名
     const basename = path.basename(
       file.originalname,
       path.extname(file.originalname)
     );
+    console.log('basename',basename)
     // 获取后缀名
     const ext = path.extname(file.originalname);
     // 构建新名字
     const newName = `${basename}-${new Date().getTime()}-${Math.floor(
       Math.random() * 9000 + 1000
     )}${ext}`;
+    console.log(newName);
+    
     cb(null, newName);
   },
 });

@@ -6,29 +6,31 @@ import express, { ErrorRequestHandler } from "express";
 import path from "path";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
+// import historyApiFallback from "connect-history-api-fallback";
 
 // import sql
-import "./dao/db";
+import "./src/dao/db";
 
 // import router
-import adminRouter from "./routes/api/admin/admin.api";
-import bannerRouter from "./routes/api/banner/banner.api";
-import captchaRouter from "./routes/api/captcha/captcha.api";
+import adminRouter from "./src/routes/api/admin/admin.api";
+import bannerRouter from "./src/routes/api/banner/banner.api";
+import captchaRouter from "./src/routes/api/captcha/captcha.api";
 import { expressjwt } from "express-jwt";
-import { md5 } from "./utils/crypto";
-import ServiceError, { ForbiddenError, UnknownError } from "./utils/errors";
+import { md5 } from "./src/utils/crypto";
+import ServiceError, { ForbiddenError, UnknownError } from "./src/utils/errors";
 
 // server instance
 export const app = express();
 
 import session from "express-session";
-import uploadRouter from "./routes/api/upload/upload.api";
-import blogTypeRouter from "./routes/api/blogType/blogType.api";
-import blogRouter from "./routes/api/blog/blog.api";
-import demoRouter from "./routes/api/demo/demo.api";
-import messageRouter from "./routes/api/message/message.api";
-import settingRouter from "./routes/api/setting/setting.api";
-import aboutRouter from "./routes/api/about/about.api";
+import uploadRouter from "./src/routes/api/upload/upload.api";
+import blogTypeRouter from "./src/routes/api/blogType/blogType.api";
+import blogRouter from "./src/routes/api/blog/blog.api";
+import demoRouter from "./src/routes/api/demo/demo.api";
+import messageRouter from "./src/routes/api/message/message.api";
+import settingRouter from "./src/routes/api/setting/setting.api";
+import aboutRouter from "./src/routes/api/about/about.api";
+// app.use(historyApiFallback());
 app.use(
   session({
     secret: process.env.SESSION_SECRECT!,
