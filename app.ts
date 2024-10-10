@@ -58,6 +58,7 @@ app.use(
       { url: "/res/captcha", methods: ["GET"] },
       { url: "/api/banner", methods: ["GET"] },
       { url: "/api/blogtype", methods: ["GET"] },
+      { url: /\/api\/blogtype\/\d/, methods: ["DELETE"] },
       { url: "/api/blog", methods: ["GET"] },
       { url: /\/api\/blog\/\d/, methods: ["GET"] },
       { url: "/api/project", methods: ["GET"] },

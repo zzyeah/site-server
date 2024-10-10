@@ -38,6 +38,16 @@ export class AdminDAO {
   public async getAdminList() {
     return await AdminModel.findAll();
   }
+
+  public async registerAdmin(accountInfo: AdminAttributes) {
+    return await AdminModel.create(accountInfo);
+  }
+
+  public async findAdmin(loginId: string) {
+    return await AdminModel.findOne({
+      where: { loginId },
+    });
+  }
 }
 
 const adminDAO = AdminDAO.getInstance();

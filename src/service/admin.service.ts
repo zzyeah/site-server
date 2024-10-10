@@ -4,7 +4,11 @@ import { sign } from "jsonwebtoken";
 import adminDAO, { AdminDAO } from "../dao/admin/dao/admin.dao";
 import { LoginInfo, updateAdminRequest } from "../types";
 import { md5 } from "../utils/crypto";
-import { ForbiddenError, ValidationError } from "../utils/errors";
+import {
+  ForbiddenError,
+  SQLExcuteError,
+  ValidationError,
+} from "../utils/errors";
 import { AdminAttributes } from "../dao/admin/model/admin.model";
 
 class AdminService {
@@ -19,7 +23,7 @@ class AdminService {
     loginInfo.loginPwd = md5(loginInfo.loginPwd);
     // 接下来进行数据的验证 => 查询数据库数据
     const data = await adminDAO.login(loginInfo);
-    let result:AdminAttributes | null = null;
+    let result: AdminAttributes | null = null;
     if (data?.dataValues) {
       result = data.dataValues;
       let loginPeriod: number = 1;
@@ -66,7 +70,7 @@ class AdminService {
         loginPwd: newPwd,
         id: adminInfo.dataValues.id,
         avatar: adminInfo.dataValues.avatar,
-        permission: adminInfo.dataValues.permission
+        permission: adminInfo.dataValues.permission,
       });
       return {
         loginId: accountInfo.loginId,
@@ -79,8 +83,17 @@ class AdminService {
     }
   }
 
-  public async getAdminList(){
+  public async getAdminList() {
     return adminDAO.getAdminList();
+  }
+
+  public async registerAdmin(accountInfo: AdminAttributes) {
+    const data = await adminDAO.findAdmin(accountInfo.loginId);
+    if (data) {
+      return await adminDAO.registerAdmin(accountInfo);
+    } else {
+      throw new SQLExcuteError("用户已存在");
+    }
   }
 }
 

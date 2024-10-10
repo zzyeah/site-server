@@ -5,6 +5,7 @@ import { parseToken } from "../../../utils/tools";
 import { CommonRequest } from "../../../types/api/common/request.bean";
 import { LoginInfo, updateAdminRequest } from "../../../types";
 import { ValidationError } from "../../../utils/errors";
+import { AdminAttributes } from "src/dao/admin/model/admin.model";
 
 const adminRouter = express.Router();
 
@@ -55,9 +56,19 @@ adminRouter.put(
 
 adminRouter.get(
   "/",
-  asyncHandler(async(req,res,next)=>{
+  asyncHandler(async (req, res, next) => {
     return await adminService.getAdminList();
   })
-)
+);
+
+/**
+ * 注册管理员
+ */
+adminRouter.post(
+  "/",
+  asyncHandler(async (req: CommonRequest<AdminAttributes>, res, next) => {
+    return await adminService.registerAdmin(req.body);
+  })
+);
 
 export default adminRouter;
