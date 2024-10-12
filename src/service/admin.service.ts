@@ -2,7 +2,7 @@
 
 import { sign } from "jsonwebtoken";
 import adminDAO, { AdminDAO } from "../dao/admin/dao/admin.dao";
-import { LoginInfo, updateAdminRequest } from "../types";
+import { Constraints, LoginInfo, updateAdminRequest } from "../types";
 import { md5 } from "../utils/crypto";
 import {
   ForbiddenError,
@@ -10,6 +10,18 @@ import {
   ValidationError,
 } from "../utils/errors";
 import { AdminAttributes } from "../dao/admin/model/admin.model";
+import { permission } from "process";
+import validate from "validate.js";
+
+validate.validators.accountIsExist = async function (loginId: string) {
+  const data = await adminDAO.findAdmin(loginId);
+  if (data) return "Account is Exist";
+  return;
+};
+validate.validators.noPassValueByParams = async function (value: any) {
+  const isEmpty = validate.isEmpty(value);
+  if (isEmpty) return;
+};
 
 class AdminService {
   public static instance: AdminService;
@@ -71,6 +83,7 @@ class AdminService {
         id: adminInfo.dataValues.id,
         avatar: adminInfo.dataValues.avatar,
         permission: adminInfo.dataValues.permission,
+        enabled: adminInfo.dataValues.enabled,
       });
       return {
         loginId: accountInfo.loginId,
@@ -88,11 +101,50 @@ class AdminService {
   }
 
   public async registerAdmin(accountInfo: AdminAttributes) {
-    const data = await adminDAO.findAdmin(accountInfo.loginId);
-    if (data) {
-      return await adminDAO.registerAdmin(accountInfo);
-    } else {
-      throw new SQLExcuteError("用户已存在");
+    const accountRule: Constraints = {
+      loginId: {
+        presence: {
+          allowEmpty: false,
+        },
+        type: "string",
+        accountIsExist: true,
+      },
+      name: {
+        presence: {
+          allowEmpty: false,
+        },
+        type: "string",
+      },
+      loginPwd: {
+        presence: {
+          allowEmpty: false,
+        },
+        type: "string",
+      },
+      avatar: {
+        presence: {
+          allowEmpty: true,
+        },
+        type: "string",
+      },
+      permission: {
+        presence: {
+          allowEmpty: false,
+        },
+        type: "number",
+      },
+    };
+    try {
+      await validate.async(accountInfo, accountRule);
+      const account = {
+        ...accountInfo,
+        enabled: !validate.isEmpty(accountInfo.enabled)
+          ? accountInfo.enabled
+          : 1,
+      };
+      return await adminDAO.registerAdmin(account);
+    } catch (error) {
+      throw new ValidationError("数据验证失败");
     }
   }
 }

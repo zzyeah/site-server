@@ -9,7 +9,8 @@ export interface AdminAttributes extends SqlBaseAttributes {
   name: string;
   loginPwd: string;
   avatar?: string;
-  permission: number
+  permission: number;
+  enabled?: number;
 }
 
 // 创建一个类型声明，将sequelize.define的结果转换为静态类类型
@@ -31,12 +32,16 @@ const AdminModel = sequelize.define<SqlModelInstance<AdminAttributes>>(
     },
     avatar: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: true,
     },
     permission: {
       type: DataTypes.INTEGER,
-      allowNull: false
-    }
+      allowNull: false,
+    },
+    enabled: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
   },
   {
     freezeTableName: true,
