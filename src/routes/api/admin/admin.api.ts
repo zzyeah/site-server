@@ -1,7 +1,7 @@
 import express from "express";
 import adminService from "../../../service/admin.service";
-import { asyncHandler, getResult } from "../../../utils/apiHandler";
-import { parseToken } from "../../../utils/tools";
+import { asyncHandler } from "../../../utils/apiHandler";
+import { parseToken2Info } from "../../../utils/tools";
 import { CommonRequest } from "../../../types/api/common/request.bean";
 import { LoginInfo, updateAdminRequest } from "../../../types";
 import { ValidationError } from "../../../utils/errors";
@@ -34,16 +34,15 @@ adminRouter.post(
 adminRouter.get(
   "/whoami",
   asyncHandler(async (req, res, next) => {
-    // 1. 从客户端的请求拿到token
-    const token = req.get("authorization");
-    // 2. 解析token，还原成有用信息
-    const result = parseToken(token);
-    // 3. 返回给客户端
-    return {
-      id: result!["id"],
-      loginId: result!["loginId"],
-      name: result!["name"],
-    };
+    const result = parseToken2Info(req);
+    // 返回给客户端
+    if (result) {
+      return {
+        id: result.id,
+        loginId: result.loginId,
+        name: result.name,
+      };
+    }
   })
 );
 
@@ -53,7 +52,12 @@ adminRouter.put(
     return await adminService.updateAdmin(req.body);
   })
 );
-
+adminRouter.put(
+  "/:id",
+  asyncHandler(async (req: CommonRequest<updateAdminRequest>, res, next) => {
+    return await adminService.updateAdminById(req);
+  })
+);
 adminRouter.get(
   "/",
   asyncHandler(async (req, res, next) => {
@@ -61,6 +65,19 @@ adminRouter.get(
   })
 );
 
+adminRouter.get(
+  "/:id",
+  asyncHandler(async (req, res, next) => {
+    return await adminService.findAdminById(req.params.id);
+  })
+);
+
+adminRouter.get(
+  "/adminIsExist/:id",
+  asyncHandler(async (req, res, next) => {
+    return await adminService.findAdmin(req.params.id);
+  })
+);
 /**
  * 注册管理员
  */
@@ -71,4 +88,10 @@ adminRouter.post(
   })
 );
 
+adminRouter.delete(
+  "/:id",
+  asyncHandler(async (req, res, next) => {
+    return await adminService.deleteAdmin(req.params.id);
+  })
+);
 export default adminRouter;

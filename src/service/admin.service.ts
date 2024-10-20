@@ -1,23 +1,21 @@
 // admin 模块业务逻辑层
 
 import { sign } from "jsonwebtoken";
-import adminDAO, { AdminDAO } from "../dao/admin/dao/admin.dao";
+import adminDAO from "../dao/admin/dao/admin.dao";
 import { Constraints, LoginInfo, updateAdminRequest } from "../types";
 import { md5 } from "../utils/crypto";
-import {
-  ForbiddenError,
-  SQLExcuteError,
-  ValidationError,
-} from "../utils/errors";
+import { ForbiddenError, ValidationError } from "../utils/errors";
 import { AdminAttributes } from "../dao/admin/model/admin.model";
-import { permission } from "process";
 import validate from "validate.js";
+import { Request } from "express";
+import { parseToken2Info } from "../utils";
 
 validate.validators.accountIsExist = async function (loginId: string) {
   const data = await adminDAO.findAdmin(loginId);
   if (data) return "Account is Exist";
   return;
 };
+
 validate.validators.noPassValueByParams = async function (value: any) {
   const isEmpty = validate.isEmpty(value);
   if (isEmpty) return;
@@ -95,11 +93,64 @@ class AdminService {
       throw new ValidationError("旧密码不正确");
     }
   }
-
+  public async updateAdminById(req: Request) {
+    // 解析Token
+    const result = parseToken2Info(req);
+    if (result) {
+      const updateContent = req.body;
+      // id => 当前用户使用的id
+      const { id: currentId, loginId, name } = result;
+      const currentAdminInfo = await adminDAO.findAdminById(+currentId);
+      const modifyAdminInfo = await adminDAO.findAdminById(+req.params.id);
+      // 有无用户信息
+      if (currentAdminInfo?.dataValues && modifyAdminInfo?.dataValues) {
+        // 判断当前用户的权限大于或等于将被修改的用户的权限
+        // 有用户信息
+        if (
+          currentAdminInfo.dataValues.permission <=
+          modifyAdminInfo.dataValues.permission
+        ) {
+          // 合并对象，然后更新
+          try {
+            const data = {
+              ...modifyAdminInfo.dataValues,
+              ...updateContent,
+            };
+            await adminDAO.updateAdminById(
+              modifyAdminInfo.dataValues.id!,
+              data
+            );
+          } catch (error) {
+            console.log(error);
+          }
+          return {
+            loginId: modifyAdminInfo.dataValues.loginId,
+            name: modifyAdminInfo.dataValues.name,
+            id: modifyAdminInfo.dataValues.id,
+          };
+        }
+      } else {
+        // 无用户信息
+        throw new ValidationError("旧密码不正确");
+      }
+    } else {
+      throw new ForbiddenError("登陆过期");
+    }
+  }
   public async getAdminList() {
-    return adminDAO.getAdminList();
+    return await adminDAO.getAdminList();
+  }
+ 
+  public async findAdminById(id: string) {
+    return await adminDAO.findAdminById(+id);
   }
 
+  public async findAdmin(id: string) {
+    return await adminDAO.findAdmin(id);
+  }
+  public async deleteAdmin(id: string) {
+    return await adminDAO.deleteAdmin(id);
+  }
   public async registerAdmin(accountInfo: AdminAttributes) {
     const accountRule: Constraints = {
       loginId: {
@@ -138,6 +189,7 @@ class AdminService {
       await validate.async(accountInfo, accountRule);
       const account = {
         ...accountInfo,
+        loginPwd: md5(accountInfo.loginPwd),
         enabled: !validate.isEmpty(accountInfo.enabled)
           ? accountInfo.enabled
           : 1,

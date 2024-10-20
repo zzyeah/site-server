@@ -35,6 +35,13 @@ export class AdminDAO {
     });
   }
 
+  public async updateAdminById(id: number, newAccountInfo: AdminAttributes) {
+    return await AdminModel.update(newAccountInfo, {
+      where: {
+        id,
+      },
+    });
+  }
   public async getAdminList() {
     return await AdminModel.findAll();
   }
@@ -46,6 +53,20 @@ export class AdminDAO {
   public async findAdmin(loginId: string) {
     return await AdminModel.findOne({
       where: { loginId },
+    });
+  }
+
+  public async findAdminById(id: number) {
+    return await AdminModel.findOne({
+      where: { id },
+    });
+  }
+
+  public async deleteAdmin(id: string) {
+    return await AdminModel.destroy({
+      where: {
+        id,
+      },
     });
   }
 }

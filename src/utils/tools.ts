@@ -3,12 +3,13 @@ import { md5 } from "./crypto";
 import multer, { diskStorage } from "multer";
 import path from "path";
 import toc, { Token } from "markdown-toc";
-import { Blog } from "../types";
+import { Authorization, Blog } from "../types";
 import { PathLike } from "fs";
 import { UnknownError } from "./errors";
 import { readdir } from "fs/promises";
+import { Request } from "express";
 
-export function parseToken(token: string | undefined) {
+export function parseToken(token: string | undefined): Authorization | null {
   if (!token) {
     // 没有token
     return null;
@@ -20,7 +21,7 @@ export function parseToken(token: string | undefined) {
   }
   // }
   try {
-    const result = verify(token, md5(process.env.JWT_SECRECT!));
+    const result = <Authorization>verify(token, md5(process.env.JWT_SECRECT!));
     return result;
   } catch (error) {
     // logger.log(error);
@@ -31,18 +32,19 @@ export function parseToken(token: string | undefined) {
 const storage = diskStorage({
   // 文件存储路径
   destination: (req, file, cb) => {
-    cb(null, __dirname + "/../public/static/uploads");
+    const url = path.resolve(__dirname, "../../public/static/uploads");
+    cb(null, url);
   },
   // 上传到服务器的文件，文件名要做单独处理
   filename: (req, file, cb) => {
-    console.log('file',file);
-    
+    console.log("file", file);
+
     // 获取文件名
     const basename = path.basename(
       file.originalname,
       path.extname(file.originalname)
     );
-    console.log('basename',basename)
+    console.log("basename", basename);
     // 获取后缀名
     const ext = path.extname(file.originalname);
     // 构建新名字
@@ -50,7 +52,7 @@ const storage = diskStorage({
       Math.random() * 9000 + 1000
     )}${ext}`;
     console.log(newName);
-    
+
     cb(null, newName);
   },
 });
@@ -233,4 +235,11 @@ export async function readDirLength(dir: PathLike) {
   } catch (error) {
     throw new UnknownError(error);
   }
+}
+
+export function parseToken2Info(req: Request): Authorization | null {
+  // 1. 从客户端的请求拿到token
+  const token = req.get("authorization");
+  // 2. 解析token，还原成有用信息
+  return parseToken(token);
 }
