@@ -73,8 +73,8 @@ export interface TOC {
   children: TOC[];
 }
 export function handleTOC(blogInfo: Blog): Blog {
-  if (!blogInfo.htmlContent) return blogInfo;
-  let result = toc(blogInfo.htmlContent).json;
+  if (!blogInfo.markdownContent) return blogInfo;
+  let result = toc(blogInfo.markdownContent).json;
   // 将 markdown 标题提取出来
   // 形成一个数组，数组里面是一个个对象，每个对象记录了标题的名称以及等级，如下：
   // [

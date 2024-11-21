@@ -17,4 +17,5 @@ export interface BlogAttributes extends BlogCommonInfo {
 
 export interface Blog extends BlogCommonInfo {
   toc?: TOC[];
+  markdownContent?: string;
 }
