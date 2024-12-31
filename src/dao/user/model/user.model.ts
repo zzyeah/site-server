@@ -3,18 +3,18 @@ import sequelize from "../../dbConnect";
 import { SqlBaseAttributes, SqlModelInstance } from "../../../types";
 
 // 定义用户自定义属性接口
-export interface AdminAttributes extends SqlBaseAttributes {
+export interface UserAttributes extends SqlBaseAttributes {
   loginId: string;
   name: string;
   loginPwd: string;
   avatar?: string;
-  permission: number;
+  permission?: number; // 暂时不需要权限
   enabled?: number;
 }
 
 // 创建一个类型声明，将sequelize.define的结果转换为静态类类型
-const AdminModel = sequelize.define<SqlModelInstance<AdminAttributes>>(
-  "admin",
+const UserModel = sequelize.define<SqlModelInstance<UserAttributes>>(
+  "user",
   {
     // 表的字段
     loginId: {
@@ -35,7 +35,7 @@ const AdminModel = sequelize.define<SqlModelInstance<AdminAttributes>>(
     },
     permission: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
     },
     enabled: {
       type: DataTypes.INTEGER,
@@ -49,4 +49,4 @@ const AdminModel = sequelize.define<SqlModelInstance<AdminAttributes>>(
   }
 );
 
-export default AdminModel;
+export default UserModel;

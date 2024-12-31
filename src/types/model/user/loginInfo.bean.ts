@@ -1,4 +1,4 @@
-export interface AdminLoginInfo {
+export interface UserLoginInfo {
   loginId: string;
   loginPwd: string;
   captcha?: string;

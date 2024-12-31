@@ -1,17 +1,18 @@
-// admin 模块业务逻辑层
+// user 模块业务逻辑层
 
 import { sign } from "jsonwebtoken";
-import adminDAO from "../dao/admin/dao/admin.dao";
-import { Constraints, UserLoginInfo, updateAdminRequest } from "../types";
+import { Constraints, UserLoginInfo, UserRegisterInfo } from "../types";
 import { md5 } from "../utils/crypto";
 import { ForbiddenError, ValidationError } from "../utils/errors";
-import { AdminAttributes } from "../dao/admin/model/admin.model";
 import validate from "validate.js";
 import { Request } from "express";
 import { parseToken2Info } from "../utils";
+import userDAO from "../dao/user/dao/user.dao";
+import { UserAttributes } from "../dao/user/model/user.model";
+import { updateUserRequest } from "../types/model/user/updateUser.request";
 
 validate.validators.accountIsExist = async function (loginId: string) {
-  const data = await adminDAO.findAdmin(loginId);
+  const data = await userDAO.findUser(loginId);
   if (data) return "Account is Exist";
   return;
 };
@@ -21,19 +22,19 @@ validate.validators.noPassValueByParams = async function (value: any) {
   if (isEmpty) return;
 };
 
-class AdminService {
-  public static instance: AdminService;
+class UserService {
+  public static instance: UserService;
 
   public static getInstance() {
-    if (!AdminService.instance) AdminService.instance = new AdminService();
-    return AdminService.instance;
+    if (!UserService.instance) UserService.instance = new UserService();
+    return UserService.instance;
   }
 
   public async login(loginInfo: UserLoginInfo) {
     loginInfo.loginPwd = md5(loginInfo.loginPwd);
     // 接下来进行数据的验证 => 查询数据库数据
-    const data = await adminDAO.login(loginInfo);
-    let result: AdminAttributes | null = null;
+    const data = await userDAO.login(loginInfo);
+    let result: UserAttributes | null = null;
     if (data?.dataValues) {
       result = data.dataValues;
       let loginPeriod: number = 1;
@@ -62,97 +63,93 @@ class AdminService {
     return { data: result };
   }
 
-  public async updateAdmin(accountInfo: updateAdminRequest) {
+  public async updateUser(accountInfo: updateUserRequest) {
     // 1. 根据传入的账号信息查询对应的用户（需使用旧密码）
-    const adminInfo = await adminDAO.login({
+    const userInfo = await userDAO.login({
       loginId: accountInfo.loginId,
       loginPwd: md5(accountInfo.oldLoginPwd),
     });
     // 2. 两种情况
     // 有无用户信息
-    if (adminInfo?.dataValues) {
+    if (userInfo?.dataValues) {
       // 有用户信息
       // 合并对象，然后更新
       const newPwd = md5(accountInfo.loginPwd);
-      await adminDAO.updateAdmin({
+      await userDAO.updateUser({
         name: accountInfo.name,
         loginId: accountInfo.loginId,
         loginPwd: newPwd,
-        id: adminInfo.dataValues.id,
-        avatar: adminInfo.dataValues.avatar,
-        permission: adminInfo.dataValues.permission,
-        enabled: adminInfo.dataValues.enabled,
+        id: userInfo.dataValues.id,
+        avatar: userInfo.dataValues.avatar,
+        permission: userInfo.dataValues.permission,
+        enabled: userInfo.dataValues.enabled,
       });
       return {
         loginId: accountInfo.loginId,
         name: accountInfo.name,
-        id: adminInfo.dataValues.id,
+        id: userInfo.dataValues.id,
       };
     } else {
       // 无用户信息
       throw new ValidationError("旧密码不正确");
     }
   }
-  public async updateAdminById(req: Request) {
+  public async updateUserById(req: Request) {
     // 解析Token
     const result = parseToken2Info(req);
     if (result) {
       const updateContent = req.body;
       // id => 当前用户使用的id
       const { id: currentId, loginId, name } = result;
-      const currentAdminInfo = await adminDAO.findAdminById(+currentId);
-      const modifyAdminInfo = await adminDAO.findAdminById(+req.params.id);
-      // 有无用户信息
-      if (currentAdminInfo?.dataValues && modifyAdminInfo?.dataValues) {
-        // 判断当前用户的权限大于或等于将被修改的用户的权限
-        // 有用户信息
-        if (
-          currentAdminInfo.dataValues.permission <=
-          modifyAdminInfo.dataValues.permission
-        ) {
+      if (+currentId === +req.params.id) {
+        // 判断当前用户是否为将被修改的用户
+        const modifyUserInfo = await userDAO.findUserById(+req.params.id);
+        // 有无用户信息
+        if (modifyUserInfo?.dataValues) {
+          // 判断当前用户的权限大于或等于将被修改的用户的权限
+          // 有用户信息
           // 合并对象，然后更新
           try {
             const data = {
-              ...modifyAdminInfo.dataValues,
+              ...modifyUserInfo.dataValues,
               ...updateContent,
             };
-            await adminDAO.updateAdminById(
-              modifyAdminInfo.dataValues.id!,
-              data
-            );
+            await userDAO.updateUserById(modifyUserInfo.dataValues.id!, data);
           } catch (error) {
             console.log(error);
           }
           return {
-            loginId: modifyAdminInfo.dataValues.loginId,
-            name: modifyAdminInfo.dataValues.name,
-            id: modifyAdminInfo.dataValues.id,
+            loginId: modifyUserInfo.dataValues.loginId,
+            name: modifyUserInfo.dataValues.name,
+            id: modifyUserInfo.dataValues.id,
           };
+        } else {
+          // 无用户信息
+          throw new ValidationError("旧密码不正确");
         }
       } else {
-        // 无用户信息
-        throw new ValidationError("旧密码不正确");
+        throw new ValidationError("非相同用户");
       }
     } else {
       throw new ForbiddenError("登陆过期");
     }
   }
-  public async getAdminList() {
-    return await adminDAO.getAdminList();
+  public async getUserList() {
+    return await userDAO.getUserList();
   }
 
-  public async findAdminById(id: string) {
-    return await adminDAO.findAdminById(+id);
+  public async findUserById(id: string) {
+    return await userDAO.findUserById(+id);
   }
 
-  public async findAdminIsExist(id: string) {
-    const result = await adminDAO.findAdmin(id);
+  public async findUserIsExist(id: string) {
+    const result = await userDAO.findUser(id);
     return Boolean(result);
   }
-  public async deleteAdmin(id: string) {
-    return await adminDAO.deleteAdmin(id);
+  public async deleteUser(id: string) {
+    return await userDAO.deleteUser(id);
   }
-  public async registerAdmin(accountInfo: AdminAttributes) {
+  public async registerUser(accountInfo: UserRegisterInfo) {
     const accountRule: Constraints = {
       loginId: {
         presence: {
@@ -173,18 +170,6 @@ class AdminService {
         },
         type: "string",
       },
-      avatar: {
-        presence: {
-          allowEmpty: true,
-        },
-        type: "string",
-      },
-      permission: {
-        presence: {
-          allowEmpty: false,
-        },
-        type: "number",
-      },
     };
     try {
       await validate.async(accountInfo, accountRule);
@@ -195,7 +180,7 @@ class AdminService {
           ? accountInfo.enabled
           : 1,
       };
-      const registerInfo = await adminDAO.registerAdmin(account);
+      const registerInfo = await userDAO.registerUser(account);
       return {
         loginId: registerInfo.dataValues.id,
         name: registerInfo.dataValues.name,
@@ -206,5 +191,5 @@ class AdminService {
   }
 }
 
-const adminService = AdminService.getInstance();
-export default adminService;
+const userService = UserService.getInstance();
+export default userService;

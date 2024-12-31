@@ -1,4 +1,4 @@
-import { LoginInfo } from "../../../types";
+import { UserLoginInfo } from "../../../types";
 import BannerModel, { BannerAttributes } from "../model/banner.model";
 
 // login

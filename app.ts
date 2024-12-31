@@ -31,6 +31,7 @@ import demoRouter from "./src/routes/api/demo/demo.api";
 import messageRouter from "./src/routes/api/message/message.api";
 import settingRouter from "./src/routes/api/setting/setting.api";
 import aboutRouter from "./src/routes/api/about/about.api";
+import userRouter from "./src/routes/api/user/user.api";
 // app.use(historyApiFallback());
 app.use(
   session({
@@ -60,6 +61,10 @@ app.use(
   }).unless({
     path: [
       { url: "/api/admin/login", methods: ["POST"] },
+      { url: "/api/user/login", methods: ["POST"] },
+      { url: "/api/user", methods: ["POST"] },
+      { url: /\/api\/user\/userIsExist\/[\w]+/, methods: ["GET"] },
+      { url: /\/api\/admin\/adminIsExist\/[\w]+/, methods: ["GET"] },
       { url: "/res/captcha", methods: ["GET"] },
       { url: "/api/banner", methods: ["GET"] },
       { url: "/api/blogtype", methods: ["GET"] },
@@ -86,6 +91,7 @@ app.use("/api/message", messageRouter);
 app.use("/api/comment", messageRouter);
 app.use("/api/setting", settingRouter);
 app.use("/api/about", aboutRouter);
+app.use("/api/user", userRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
