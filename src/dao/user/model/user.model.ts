@@ -1,16 +1,6 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../../dbConnect";
-import { SqlBaseAttributes, SqlModelInstance } from "../../../types";
-
-// 定义用户自定义属性接口
-export interface UserAttributes extends SqlBaseAttributes {
-  loginId: string;
-  name: string;
-  loginPwd: string;
-  avatar?: string;
-  permission?: number; // 暂时不需要权限
-  enabled?: number;
-}
+import { SqlBaseAttributes, SqlModelInstance, UserAttributes } from "../../../types";
 
 // 创建一个类型声明，将sequelize.define的结果转换为静态类类型
 const UserModel = sequelize.define<SqlModelInstance<UserAttributes>>(

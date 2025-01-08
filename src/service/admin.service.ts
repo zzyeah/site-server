@@ -2,7 +2,7 @@
 
 import { sign } from "jsonwebtoken";
 import adminDAO from "../dao/admin/dao/admin.dao";
-import { Constraints, UserLoginInfo, updateAdminRequest } from "../types";
+import { Constraints, AdminLoginInfo, updateAdminRequest } from "../types";
 import { md5 } from "../utils/crypto";
 import { ForbiddenError, ValidationError } from "../utils/errors";
 import { AdminAttributes } from "../dao/admin/model/admin.model";
@@ -29,7 +29,7 @@ class AdminService {
     return AdminService.instance;
   }
 
-  public async login(loginInfo: UserLoginInfo) {
+  public async login(loginInfo: AdminLoginInfo) {
     loginInfo.loginPwd = md5(loginInfo.loginPwd);
     // 接下来进行数据的验证 => 查询数据库数据
     const data = await adminDAO.login(loginInfo);
@@ -194,12 +194,11 @@ class AdminService {
         enabled: !validate.isEmpty(accountInfo.enabled)
           ? accountInfo.enabled
           : 1,
+        avatar: "/static/avatar/666.png",
       };
       const registerInfo = await adminDAO.registerAdmin(account);
-      return {
-        loginId: registerInfo.dataValues.id,
-        name: registerInfo.dataValues.name,
-      };
+      const { loginPwd, ...result } = registerInfo.dataValues;
+      return result;
     } catch (error) {
       throw new ValidationError("数据验证失败");
     }

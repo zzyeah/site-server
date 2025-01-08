@@ -1,5 +1,5 @@
-import { UserLoginInfo } from "../../../types";
-import UserModel, { UserAttributes } from "../model/user.model";
+import { UserAttributes, UserLoginRequest } from "../../../types";
+import UserModel from "../model/user.model";
 
 // login
 export class UserDAO {
@@ -10,11 +10,10 @@ export class UserDAO {
     return UserDAO.instance;
   }
 
-  public async login(loginInfo: UserLoginInfo) {
+  public async login(loginInfo: UserLoginRequest) {
     const { loginId, loginPwd } = loginInfo;
     try {
       const data = await UserModel.findOne({
-        attributes: ["loginId", "name", "id"],
         where: {
           loginId,
           loginPwd,
@@ -35,7 +34,7 @@ export class UserDAO {
     });
   }
 
-  public async updateUserById(id: number, newAccountInfo: UserAttributes) {
+  public async updateUserById(id: string, newAccountInfo: UserAttributes) {
     return await UserModel.update(newAccountInfo, {
       where: {
         id,
@@ -56,7 +55,7 @@ export class UserDAO {
     });
   }
 
-  public async findUserById(id: number) {
+  public async findUserById(id: string) {
     return await UserModel.findOne({
       where: { id },
     });

@@ -1,4 +1,4 @@
-import { UserLoginInfo } from "../../../types";
+import { AdminLoginInfo } from "../../../types";
 import AdminModel, { AdminAttributes } from "../model/admin.model";
 
 // login
@@ -10,7 +10,7 @@ export class AdminDAO {
     return AdminDAO.instance;
   }
 
-  public async login(loginInfo: UserLoginInfo) {
+  public async login(loginInfo: AdminLoginInfo) {
     const { loginId, loginPwd } = loginInfo;
     try {
       const data = await AdminModel.findOne({
@@ -35,7 +35,7 @@ export class AdminDAO {
     });
   }
 
-  public async updateAdminById(id: number, newAccountInfo: AdminAttributes) {
+  public async updateAdminById(id: string, newAccountInfo: AdminAttributes) {
     return await AdminModel.update(newAccountInfo, {
       where: {
         id,

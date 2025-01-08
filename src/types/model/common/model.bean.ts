@@ -1,7 +1,7 @@
 import { Model, Optional } from "sequelize";
 
 export interface SqlBaseAttributes {
-  readonly id?: number;
+  readonly id?: string;
 }
 
 export interface SqlModelInstance<T extends SqlBaseAttributes>

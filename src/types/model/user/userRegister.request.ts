@@ -1,4 +1,4 @@
-export interface UserRegisterInfo {
+export interface UserRegisterRequest {
   loginId: string;
   loginPwd: string;
   name: string;

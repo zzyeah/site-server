@@ -1,4 +1,4 @@
-import { UserAttributes } from "src/dao/user/model/user.model";
+import { UserAttributes } from "./userAttributes.bean";
 
 export interface updateUserRequest extends Partial<UserAttributes> {
   name: string;

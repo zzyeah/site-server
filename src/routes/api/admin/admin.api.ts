@@ -3,7 +3,7 @@ import adminService from "../../../service/admin.service";
 import { asyncHandler } from "../../../utils/apiHandler";
 import { parseToken2Info } from "../../../utils/tools";
 import { CommonRequest } from "../../../types/api/common/request.bean";
-import { UserLoginInfo, updateAdminRequest } from "../../../types";
+import { AdminLoginInfo, updateAdminRequest } from "../../../types";
 import { ValidationError } from "../../../utils/errors";
 import { AdminAttributes } from "src/dao/admin/model/admin.model";
 
@@ -12,7 +12,7 @@ const adminRouter = express.Router();
 /* admin login */
 adminRouter.post(
   "/login",
-  asyncHandler(async (req: CommonRequest<UserLoginInfo>, res, next) => {
+  asyncHandler(async (req: CommonRequest<AdminLoginInfo>, res, next) => {
     const loginInfo = req.body;
     // 首先验证验证码
     if (

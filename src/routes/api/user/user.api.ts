@@ -3,7 +3,11 @@ import userService from "../../../service/user.service";
 import { asyncHandler } from "../../../utils/apiHandler";
 import { parseToken2Info } from "../../../utils/tools";
 import { CommonRequest } from "../../../types/api/common/request.bean";
-import { UserLoginInfo, UserRegisterInfo, updateUserRequest } from "../../../types";
+import {
+  UserLoginRequest,
+  UserRegisterRequest,
+  updateUserRequest,
+} from "../../../types";
 import { ValidationError } from "../../../utils/errors";
 
 const userRouter = express.Router();
@@ -11,7 +15,7 @@ const userRouter = express.Router();
 /* user login */
 userRouter.post(
   "/login",
-  asyncHandler(async (req: CommonRequest<UserLoginInfo>, res, next) => {
+  asyncHandler(async (req: CommonRequest<UserLoginRequest>, res, next) => {
     const loginInfo = req.body;
     // 首先验证验证码
     if (
@@ -82,7 +86,7 @@ userRouter.get(
  */
 userRouter.post(
   "/",
-  asyncHandler(async (req: CommonRequest<UserRegisterInfo>, res, next) => {
+  asyncHandler(async (req: CommonRequest<UserRegisterRequest>, res, next) => {
     const loginInfo = req.body;
     // 首先验证验证码
     if (

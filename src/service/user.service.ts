@@ -1,15 +1,20 @@
 // user 模块业务逻辑层
 
 import { sign } from "jsonwebtoken";
-import { Constraints, UserLoginInfo, UserRegisterInfo } from "../types";
+import {
+  Constraints,
+  UserAttributes,
+  UserInfo,
+  UserLoginRequest,
+  UserRegisterRequest,
+} from "../types";
 import { md5 } from "../utils/crypto";
 import { ForbiddenError, ValidationError } from "../utils/errors";
 import validate from "validate.js";
 import { Request } from "express";
-import { parseToken2Info } from "../utils";
+import { parseToken2Info, transferUserInfo } from "../utils";
 import userDAO from "../dao/user/dao/user.dao";
-import { UserAttributes } from "../dao/user/model/user.model";
-import { updateUserRequest } from "../types/model/user/updateUser.request";
+import { updateUserRequest } from "../types/model/user/userUpdate.request";
 
 validate.validators.accountIsExist = async function (loginId: string) {
   const data = await userDAO.findUser(loginId);
@@ -30,13 +35,18 @@ class UserService {
     return UserService.instance;
   }
 
-  public async login(loginInfo: UserLoginInfo) {
+  public async login(loginInfo: UserLoginRequest) {
     loginInfo.loginPwd = md5(loginInfo.loginPwd);
     // 接下来进行数据的验证 => 查询数据库数据
     const data = await userDAO.login(loginInfo);
     let result: UserAttributes | null = null;
     if (data?.dataValues) {
+      const { dataValues } = data;
+      if (!dataValues.enabled) {
+        throw new ValidationError('账号未启用')
+      }
       result = data.dataValues;
+      const lastResult = transferUserInfo(result);
       let loginPeriod: number = 1;
       if (loginInfo.remember) {
         // 用户勾选登陆7天，remember会有值
@@ -57,10 +67,10 @@ class UserService {
       );
       return {
         token,
-        data: result,
+        data: lastResult,
       };
     }
-    return { data: result };
+    throw new ValidationError("账号或密码错误");
   }
 
   public async updateUser(accountInfo: updateUserRequest) {
@@ -103,7 +113,7 @@ class UserService {
       const { id: currentId, loginId, name } = result;
       if (+currentId === +req.params.id) {
         // 判断当前用户是否为将被修改的用户
-        const modifyUserInfo = await userDAO.findUserById(+req.params.id);
+        const modifyUserInfo = await userDAO.findUserById(req.params.id);
         // 有无用户信息
         if (modifyUserInfo?.dataValues) {
           // 判断当前用户的权限大于或等于将被修改的用户的权限
@@ -139,7 +149,7 @@ class UserService {
   }
 
   public async findUserById(id: string) {
-    return await userDAO.findUserById(+id);
+    return await userDAO.findUserById(id);
   }
 
   public async findUserIsExist(id: string) {
@@ -149,7 +159,9 @@ class UserService {
   public async deleteUser(id: string) {
     return await userDAO.deleteUser(id);
   }
-  public async registerUser(accountInfo: UserRegisterInfo) {
+  public async registerUser(
+    accountInfo: UserRegisterRequest
+  ): Promise<UserInfo> {
     const accountRule: Constraints = {
       loginId: {
         presence: {
@@ -179,12 +191,11 @@ class UserService {
         enabled: !validate.isEmpty(accountInfo.enabled)
           ? accountInfo.enabled
           : 1,
+        avatar: "/static/avatar/666.png",
       };
       const registerInfo = await userDAO.registerUser(account);
-      return {
-        loginId: registerInfo.dataValues.id,
-        name: registerInfo.dataValues.name,
-      };
+      const { loginPwd, ...result } = registerInfo.dataValues;
+      return result;
     } catch (error) {
       throw new ValidationError("数据验证失败");
     }
