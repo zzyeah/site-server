@@ -1,6 +1,6 @@
 import { DataTypes } from "sequelize";
-import sequelize from "../../dbConnect";
-import { SqlBaseAttributes, SqlModelInstance } from "../../../types";
+import { SqlBaseAttributes } from "../../../types";
+import { createDefaultModel } from "../../../dao/common/common.model";
 
 // 定义用户自定义属性接口
 export interface AdminAttributes extends SqlBaseAttributes {
@@ -13,7 +13,7 @@ export interface AdminAttributes extends SqlBaseAttributes {
 }
 
 // 创建一个类型声明，将sequelize.define的结果转换为静态类类型
-const AdminModel = sequelize.define<SqlModelInstance<AdminAttributes>>(
+const AdminModel = createDefaultModel<AdminAttributes>(
   "admin",
   {
     // 表的字段

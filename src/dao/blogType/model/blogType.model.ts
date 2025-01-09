@@ -1,6 +1,6 @@
 import { DataTypes } from "sequelize";
-import sequelize from "../../dbConnect";
-import { SqlBaseAttributes, SqlModelInstance } from "../../../types";
+import { SqlBaseAttributes } from "../../../types";
+import { createDefaultModel } from "../../../dao/common/common.model";
 
 // 定义用户自定义属性接口
 export interface BlogTypeAttributes extends SqlBaseAttributes {
@@ -10,14 +10,14 @@ export interface BlogTypeAttributes extends SqlBaseAttributes {
 }
 
 // 创建一个类型声明，将sequelize.define的结果转换为静态类类型
-const BlogTypeModel = sequelize.define<SqlModelInstance<BlogTypeAttributes>>(
+const BlogTypeModel = createDefaultModel<BlogTypeAttributes>(
   "blogType",
   {
     // 表的字段
     name: {
       type: DataTypes.STRING,
       allowNull: false,
-    }, 
+    },
     articleCount: {
       type: DataTypes.INTEGER,
       allowNull: false,

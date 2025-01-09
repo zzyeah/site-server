@@ -1,10 +1,9 @@
 import { DataTypes } from "sequelize";
-import sequelize from "../../dbConnect";
-import { DemoAttributes, SqlModelInstance } from "../../../types";
-
+import { DemoAttributes } from "../../../types";
+import { createDefaultModel } from "../../../dao/common/common.model";
 
 // 创建一个类型声明，将sequelize.define的结果转换为静态类类型
-const DemoModel = sequelize.define<SqlModelInstance<DemoAttributes>>(
+const DemoModel = createDefaultModel<DemoAttributes>(
   "demo",
   {
     // 表的字段

@@ -32,6 +32,8 @@ import messageRouter from "./src/routes/api/message/message.api";
 import settingRouter from "./src/routes/api/setting/setting.api";
 import aboutRouter from "./src/routes/api/about/about.api";
 import userRouter from "./src/routes/api/user/user.api";
+import typeRouter from "./src/routes/api/type/type.api";
+import issueRouter from "./src/routes/api/issue/issue.api";
 // app.use(historyApiFallback());
 app.use(
   session({
@@ -76,6 +78,8 @@ app.use(
       { url: "/api/comment", methods: ["GET", "POST"] },
       { url: "/api/setting", methods: ["GET"] },
       { url: "/api/about", methods: ["GET"] },
+      { url: "/api/type", methods: ["GET"] },
+      { url: "/api/issue", methods: ["GET"] },
     ],
   })
 );
@@ -92,6 +96,8 @@ app.use("/api/comment", messageRouter);
 app.use("/api/setting", settingRouter);
 app.use("/api/about", aboutRouter);
 app.use("/api/user", userRouter);
+app.use("/api/type", typeRouter);
+app.use("/api/issue", issueRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

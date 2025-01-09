@@ -2,12 +2,22 @@ import BlogTypeModel from "../blogType/model/blogType.model";
 import BlogModel from "../blog/model/blog.model";
 import "../demo/model/demo.model";
 import MessageModel from "../message/model/message.model";
+import IssueModel from "../issue/model/issue.model";
+import UserModel from "../user/model/user.model";
+import TypeModel from "../type/model/type.model";
 
-BlogTypeModel.hasMany(BlogModel, { foreignKey: "categoryId", sourceKey: "id" });
 BlogModel.belongsTo(BlogTypeModel, {
   foreignKey: "categoryId",
   targetKey: "id",
   as: "category",
+});
+
+BlogTypeModel.hasMany(BlogModel, { foreignKey: "categoryId", sourceKey: "id" });
+
+MessageModel.belongsTo(BlogModel, {
+  foreignKey: "blogId",
+  targetKey: "id",
+  as: "blog",
 });
 
 BlogModel.hasMany(MessageModel, {
@@ -15,8 +25,21 @@ BlogModel.hasMany(MessageModel, {
   sourceKey: "id",
 });
 
-MessageModel.belongsTo(BlogModel, {
-  foreignKey: "blogId",
+IssueModel.belongsTo(UserModel, {
+  foreignKey: "userId",
   targetKey: "id",
-  as: "blog",
+  as: "user",
+});
+UserModel.hasMany(IssueModel, {
+  foreignKey: "userId",
+  sourceKey: "id",
+});
+IssueModel.belongsTo(TypeModel, {
+  foreignKey: "typeId",
+  targetKey: "id",
+  as: "type",
+});
+TypeModel.hasMany(IssueModel, {
+  foreignKey: "typeId",
+  sourceKey: "id",
 });

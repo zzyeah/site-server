@@ -1,4 +1,4 @@
-import { AdminAttributes } from "src/dao/admin/model/admin.model";
+import { AdminAttributes } from "../dao/admin/model/admin.model";
 
 export interface updateAdminRequest extends Partial<AdminAttributes> {
   name: string;

@@ -14,7 +14,7 @@
     "noEmitOnError": true,
     "moduleResolution": "node",
     "strictPropertyInitialization": true,
-    "baseUrl": "./", /* Specify the base directory to resolve non-relative module names. */
+    "baseUrl": ".", /* Specify the base directory to resolve non-relative module names. */
     "paths": {
       "markdown-toc": [
         "src/types/plugins/markdown-toc.d.ts"

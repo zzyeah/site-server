@@ -116,8 +116,8 @@ export type CustomValidationFunction = (
 export type CompleteFieldConstraint = SingleFieldConstraint;
 
 // 继续使用ConstraintsObject定义整个表单字段约束的对象类型
-export interface Constraints {
-  [fieldName: string]:
+export type Constraints<T extends Object = {}> = {
+  [fieldName in keyof Partial<T>]:
     | CompleteFieldConstraint
-    | Record<string, CompleteFieldConstraint>; // 单个字段约束或嵌套约束对象
-}
+    | Record<string, CompleteFieldConstraint>;
+};

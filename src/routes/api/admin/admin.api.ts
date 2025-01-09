@@ -5,7 +5,7 @@ import { parseToken2Info } from "../../../utils/tools";
 import { CommonRequest } from "../../../types/api/common/request.bean";
 import { AdminLoginInfo, updateAdminRequest } from "../../../types";
 import { ValidationError } from "../../../utils/errors";
-import { AdminAttributes } from "src/dao/admin/model/admin.model";
+import { AdminAttributes } from "../../../dao/admin/model/admin.model";
 
 const adminRouter = express.Router();
 

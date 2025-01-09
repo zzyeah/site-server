@@ -3,3 +3,4 @@ export * from "./blog";
 export * from "./demo";
 export * from "./message";
 export * from "./admin";
+export * from "./issue";

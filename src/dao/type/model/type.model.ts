@@ -1,18 +1,19 @@
 import { DataTypes } from "sequelize";
-import { SqlBaseAttributes } from "../../../types";
+import sequelize from "../../dbConnect";
+import { SqlBaseAttributes, SqlModelInstance } from "../../../types";
 import { createDefaultModel } from "../../../dao/common/common.model";
 
-// 定义关于接口
-export interface AboutAttributes extends SqlBaseAttributes {
-  url: string;
+// 定义用户自定义属性接口
+export interface TypeAttributes extends SqlBaseAttributes {
+  typeName: string;
 }
 
 // 创建一个类型声明，将sequelize.define的结果转换为静态类类型
-const AboutModel = createDefaultModel<AboutAttributes>(
-  "about",
+const TypeModel = createDefaultModel<TypeAttributes>(
+  "type",
   {
     // 表的字段
-    url: {
+    typeName: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -21,7 +22,8 @@ const AboutModel = createDefaultModel<AboutAttributes>(
     freezeTableName: true,
     createdAt: false,
     updatedAt: false,
+
   }
 );
 
-export default AboutModel;
+export default TypeModel;

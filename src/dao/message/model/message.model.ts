@@ -1,6 +1,6 @@
 import { DataTypes } from "sequelize";
-import sequelize from "../../dbConnect";
-import { SqlBaseAttributes, SqlModelInstance } from "../../../types";
+import { SqlBaseAttributes } from "../../../types";
+import { createDefaultModel } from "../../../dao/common/common.model";
 
 // 定义评论属性接口
 export interface MessageAttributes extends SqlBaseAttributes {
@@ -12,7 +12,7 @@ export interface MessageAttributes extends SqlBaseAttributes {
 }
 
 // 创建一个类型声明，将sequelize.define的结果转换为静态类类型
-const MessageModel = sequelize.define<SqlModelInstance<MessageAttributes>>(
+const MessageModel = createDefaultModel<MessageAttributes>(
   "message",
   {
     // 表的字段
