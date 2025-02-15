@@ -2,6 +2,7 @@ import express from "express";
 import { asyncHandler } from "../../../utils/apiHandler";
 import { FindIssueByPageRequest } from "../../../types";
 import issueService from "../../../service/issue.service";
+import { FindIssueByIdRequest } from "../../../types/api/issue/findIssueById.request";
 
 const issueRouter = express.Router();
 
@@ -54,7 +55,7 @@ issueRouter.delete(
  */
 issueRouter.patch(
   "/:id",
-  asyncHandler(async function (req, res) {
+  asyncHandler(async function (req: FindIssueByIdRequest, res) {
     const result = await issueService.updateIssueService(
       req.params.id,
       req.body

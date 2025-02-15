@@ -31,6 +31,38 @@ const UserModel = createDefaultModel<UserAttributes>(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
+    intro: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    lastLoginDate: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    mail: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    points: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    qq: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    wechat: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    github: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    registerDate: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
   },
   {
     freezeTableName: true,

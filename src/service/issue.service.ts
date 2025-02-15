@@ -1,6 +1,6 @@
 // issue 模块业务逻辑层
 
-import { Constraints } from "../types";
+import { Constraints, FindIssueByPageQuery } from "../types";
 import issueDAO from "../dao/issue/dao/issue.dao";
 import validate from "validate.js";
 import { ValidationError } from "../utils";
@@ -17,15 +17,32 @@ class IssueService {
   /**
    * 按分页查询问答
    */
-  public async findIssueByPageService(queryObj) {
-    return await issueDAO.findIssueByPage(queryObj);
+  public async findIssueByPageService(queryObj: FindIssueByPageQuery) {
+    const result = await issueDAO.findIssueByPage(queryObj);
+    const { data } = result;
+    const parseData: any[] = [];
+    data.forEach((row) => {
+      const target = row.dataValues;
+      const type = target.type?.dataValues;
+      const result = { ...target, type };
+      parseData.push(result);
+    });
+    return { ...result, data: parseData };
   }
 
   /**
    * 根据 id 获取其中一个问答信息
    */
   public async findIssueByIdService(id) {
-    return await issueDAO.findIssueById(id);
+    const result = await issueDAO.findIssueById(id);
+    let data: any = {
+      ...result?.dataValues,
+    };
+    const user = result?.dataValues.user?.dataValues;
+    if (user) {
+      data = { ...data, user };
+    }
+    return data;
   }
 
   /**

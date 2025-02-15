@@ -34,6 +34,9 @@ import aboutRouter from "./src/routes/api/about/about.api";
 import userRouter from "./src/routes/api/user/user.api";
 import typeRouter from "./src/routes/api/type/type.api";
 import issueRouter from "./src/routes/api/issue/issue.api";
+import bookRouter from "./src/routes/api/book/book.api";
+import commentRouter from "./src/routes/api/comment/comment.api";
+import interviewRouter from "./src/routes/api/interview/interview.api";
 // app.use(historyApiFallback());
 app.use(
   session({
@@ -65,6 +68,7 @@ app.use(
       { url: "/api/admin/login", methods: ["POST"] },
       { url: "/api/user/login", methods: ["POST"] },
       { url: "/api/user", methods: ["POST"] },
+      { url: "/api/user/pointsRank", methods: ["GET"] },
       { url: /\/api\/user\/userIsExist\/[\w]+/, methods: ["GET"] },
       { url: /\/api\/admin\/adminIsExist\/[\w]+/, methods: ["GET"] },
       { url: "/res/captcha", methods: ["GET"] },
@@ -80,6 +84,11 @@ app.use(
       { url: "/api/about", methods: ["GET"] },
       { url: "/api/type", methods: ["GET"] },
       { url: "/api/issue", methods: ["GET"] },
+      { url: /\/api\/issue\/\w+/, methods: ["GET"] },
+      { url: /\/api\/comment\/issuecomment\/\w+/, methods: ["GET"] },
+      { url: /\/api\/comment\/bookcomment\/\w+/, methods: ["GET"] },
+      { url: /\/api\/interview\/\w+/, methods: ["GET"] },
+      { url: 'api/interview/interviewTitle', methods: ["GET"] },
     ],
   })
 );
@@ -92,12 +101,14 @@ app.use("/api/blog", blogRouter);
 app.use("/api/project", demoRouter);
 app.use("/res/captcha", captchaRouter);
 app.use("/api/message", messageRouter);
-app.use("/api/comment", messageRouter);
 app.use("/api/setting", settingRouter);
 app.use("/api/about", aboutRouter);
 app.use("/api/user", userRouter);
 app.use("/api/type", typeRouter);
 app.use("/api/issue", issueRouter);
+app.use("/api/book", bookRouter);
+app.use("/api/comment", commentRouter);
+app.use("/api/interview", interviewRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

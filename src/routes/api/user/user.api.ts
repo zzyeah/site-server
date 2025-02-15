@@ -9,6 +9,7 @@ import {
   updateUserRequest,
 } from "../../../types";
 import { ValidationError } from "../../../utils/errors";
+import { UserCheckPwdRequest } from "src/types/model/user/userCheckPwd.request";
 
 const userRouter = express.Router();
 
@@ -49,18 +50,27 @@ userRouter.get(
   })
 );
 
-userRouter.put(
+userRouter.get(
+  "/pointsRank",
+  asyncHandler(async (req, res, next) => {
+    return await userService.findUserByPointsRank();
+  })
+);
+
+userRouter.patch(
   "/",
   asyncHandler(async (req: CommonRequest<updateUserRequest>, res, next) => {
     return await userService.updateUser(req.body);
   })
 );
-userRouter.put(
+
+userRouter.patch(
   "/:id",
   asyncHandler(async (req: CommonRequest<updateUserRequest>, res, next) => {
     return await userService.updateUserById(req);
   })
 );
+
 userRouter.get(
   "/",
   asyncHandler(async (req, res, next) => {
@@ -105,4 +115,19 @@ userRouter.delete(
     return await userService.deleteUser(req.params.id);
   })
 );
+
+/**
+ * 确认密码是否正确
+ */
+userRouter.post(
+  "/passwordcheck",
+  asyncHandler(async function (
+    req: CommonRequest<UserCheckPwdRequest>,
+    res,
+    next
+  ) {
+    return await userService.passwordCheck(req.body);
+  })
+);
+
 export default userRouter;

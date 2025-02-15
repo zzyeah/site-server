@@ -2,19 +2,27 @@
 
 import { sign } from "jsonwebtoken";
 import {
+  CommonRequest,
   Constraints,
+  SqlModelInstance,
   UserAttributes,
   UserInfo,
   UserLoginRequest,
   UserRegisterRequest,
 } from "../types";
 import { md5 } from "../utils/crypto";
-import { ForbiddenError, ValidationError } from "../utils/errors";
+import {
+  ForbiddenError,
+  NotFoundError,
+  UnknownError,
+  ValidationError,
+} from "../utils/errors";
 import validate from "validate.js";
 import { Request } from "express";
 import { parseToken2Info, transferUserInfo } from "../utils";
 import userDAO from "../dao/user/dao/user.dao";
 import { updateUserRequest } from "../types/model/user/userUpdate.request";
+import { UserCheckPwdRequest } from "src/types/model/user/userCheckPwd.request";
 
 validate.validators.accountIsExist = async function (loginId: string) {
   const data = await userDAO.findUser(loginId);
@@ -39,14 +47,16 @@ class UserService {
     loginInfo.loginPwd = md5(loginInfo.loginPwd);
     // 接下来进行数据的验证 => 查询数据库数据
     const data = await userDAO.login(loginInfo);
-    let result: UserAttributes | null = null;
     if (data?.dataValues) {
       const { dataValues } = data;
       if (!dataValues.enabled) {
-        throw new ValidationError('账号未启用')
+        throw new ValidationError("账号未启用");
       }
-      result = data.dataValues;
-      const lastResult = transferUserInfo(result);
+      userDAO.updateUser({
+        ...dataValues,
+        lastLoginDate: new Date().getTime(),
+      });
+      const lastResult = transferUserInfo(dataValues);
       let loginPeriod: number = 1;
       if (loginInfo.remember) {
         // 用户勾选登陆7天，remember会有值
@@ -56,9 +66,9 @@ class UserService {
       // 生成token
       const token = sign(
         {
-          id: result.id,
-          loginId: result.loginId,
-          name: result.name,
+          id: dataValues.id,
+          loginId: dataValues.loginId,
+          name: dataValues.name,
         },
         md5(process.env.JWT_SECRECT!),
         {
@@ -86,13 +96,11 @@ class UserService {
       // 合并对象，然后更新
       const newPwd = md5(accountInfo.loginPwd);
       await userDAO.updateUser({
+        ...userInfo.dataValues,
         name: accountInfo.name,
         loginId: accountInfo.loginId,
         loginPwd: newPwd,
-        id: userInfo.dataValues.id,
-        avatar: userInfo.dataValues.avatar,
-        permission: userInfo.dataValues.permission,
-        enabled: userInfo.dataValues.enabled,
+        lastLoginDate: new Date().getTime(),
       });
       return {
         loginId: accountInfo.loginId,
@@ -104,7 +112,7 @@ class UserService {
       throw new ValidationError("旧密码不正确");
     }
   }
-  public async updateUserById(req: Request) {
+  public async updateUserById(req: CommonRequest<updateUserRequest>) {
     // 解析Token
     const result = parseToken2Info(req);
     if (result) {
@@ -114,28 +122,31 @@ class UserService {
       if (+currentId === +req.params.id) {
         // 判断当前用户是否为将被修改的用户
         const modifyUserInfo = await userDAO.findUserById(req.params.id);
+        const pwd = await userDAO.findUserPasswordById(modifyUserInfo?.dataValues.id!);
+        if (!modifyUserInfo?.dataValues) {
+          // 无用户信息
+          // TODO: 需要处理如果前台没有输入旧密码直接传值的情况
+          throw new ValidationError("旧密码不正确");
+        }
         // 有无用户信息
         if (modifyUserInfo?.dataValues) {
           // 判断当前用户的权限大于或等于将被修改的用户的权限
           // 有用户信息
           // 合并对象，然后更新
           try {
+            if (updateContent.loginPwd) {
+              updateContent.loginPwd = md5(updateContent.loginPwd);
+            }
             const data = {
               ...modifyUserInfo.dataValues,
               ...updateContent,
             };
             await userDAO.updateUserById(modifyUserInfo.dataValues.id!, data);
+            return await userDAO.findUserById(modifyUserInfo.dataValues.id!);
           } catch (error) {
             console.log(error);
+            return new UnknownError("未知错误");
           }
-          return {
-            loginId: modifyUserInfo.dataValues.loginId,
-            name: modifyUserInfo.dataValues.name,
-            id: modifyUserInfo.dataValues.id,
-          };
-        } else {
-          // 无用户信息
-          throw new ValidationError("旧密码不正确");
         }
       } else {
         throw new ValidationError("非相同用户");
@@ -185,19 +196,42 @@ class UserService {
     };
     try {
       await validate.async(accountInfo, accountRule);
-      const account = {
+      const account: UserAttributes = {
         ...accountInfo,
         loginPwd: md5(accountInfo.loginPwd),
-        enabled: !validate.isEmpty(accountInfo.enabled)
-          ? accountInfo.enabled
-          : 1,
+        enabled:
+          typeof accountInfo.enabled === "number" ? accountInfo.enabled : 1,
         avatar: "/static/avatar/666.png",
+        lastLoginDate: new Date().getTime(),
+        points: 0,
+        registerDate: new Date().getTime(),
       };
       const registerInfo = await userDAO.registerUser(account);
       const { loginPwd, ...result } = registerInfo.dataValues;
       return result;
     } catch (error) {
       throw new ValidationError("数据验证失败");
+    }
+  }
+
+  public async findUserByPointsRank(): Promise<
+    SqlModelInstance<
+      Pick<UserAttributes, "id" | "name" | "points" | "avatar">
+    >[]
+  > {
+    return await userDAO.findUserByPointsRank();
+  }
+
+  public async passwordCheck({ id, loginPwd }: UserCheckPwdRequest) {
+    const userInfo = await userDAO.findUserById(id);
+    if (!userInfo) {
+      throw new NotFoundError("用户不存在");
+    }
+    const info = await userDAO.findUserPasswordById(id);
+    if (info!.dataValues.loginPwd === md5(loginPwd)) {
+      return true;
+    } else {
+      return false;
     }
   }
 }

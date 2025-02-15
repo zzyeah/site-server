@@ -5,6 +5,7 @@ import BannerModel from "./banner/model/banner.model";
 import "./common/relationship";
 import SettingModel from "./setting/model/setting.model";
 import aboutModel from "./about/model/about.model";
+import IssueModel from "./issue/model/issue.model";
 
 // 初始化数据库
 sequelize
@@ -26,7 +27,7 @@ sequelize
         loginId: "zy",
         name: "administrator",
         loginPwd: md5("123456"),
-        permission: 1
+        permission: 1,
       });
       console.log("初始化管理员信息完毕", md5("123"));
     }
@@ -84,6 +85,26 @@ sequelize
         favicon: "http://mdrs.yuanjin.tech/Fs4CDlC6mwe_WXLMIiXcmSJLHO4f",
       });
       console.log("初始化全局设置数据...");
+    }
+
+    const issueCount = await IssueModel.count();
+    if (!issueCount) {
+      try {
+        await IssueModel.create({
+          issueTitle: "关于我",
+          issueContent:
+            "我是一个前端工程师，现在正在学习React，同时也在研究Vue，希望自己能 eventually 成为全栈工程师。",
+          issueDate: new Date().getTime(),
+          issueStatus: true,
+          typeId: 1,
+          scanNumber: 0,
+          commentNumber: 0,
+          userId: 1,
+        });
+      } catch (error) {
+        console.log(error);
+      }
+      console.log("create Issue init data");
     }
 
     console.log("数据库数据准备完毕");

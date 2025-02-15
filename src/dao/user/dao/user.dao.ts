@@ -14,6 +14,7 @@ export class UserDAO {
     const { loginId, loginPwd } = loginInfo;
     try {
       const data = await UserModel.findOne({
+        attributes: { exclude: ["loginPwd"] },
         where: {
           loginId,
           loginPwd,
@@ -42,7 +43,9 @@ export class UserDAO {
     });
   }
   public async getUserList() {
-    return await UserModel.findAll();
+    return await UserModel.findAll({
+      attributes: { exclude: ["loginPwd"] },
+    });
   }
 
   public async registerUser(accountInfo: UserAttributes) {
@@ -51,12 +54,14 @@ export class UserDAO {
 
   public async findUser(loginId: string) {
     return await UserModel.findOne({
+      attributes: { exclude: ["loginPwd"] },
       where: { loginId },
     });
   }
 
   public async findUserById(id: string) {
     return await UserModel.findOne({
+      attributes: { exclude: ["loginPwd"] },
       where: { id },
     });
   }
@@ -66,6 +71,21 @@ export class UserDAO {
       where: {
         id,
       },
+    });
+  }
+
+  public async findUserByPointsRank() {
+    return await UserModel.findAll({
+      attributes: ["id", "name", "points", "avatar"],
+      limit: 10,
+      order: [["points", "DESC"]],
+    });
+  }
+
+  public async findUserPasswordById(id: string) {
+    return await UserModel.findOne({
+      attributes: { include: ["loginPwd"] },
+      where: { id },
     });
   }
 }

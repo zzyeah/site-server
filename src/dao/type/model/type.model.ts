@@ -1,5 +1,4 @@
 import { DataTypes } from "sequelize";
-import sequelize from "../../dbConnect";
 import { SqlBaseAttributes, SqlModelInstance } from "../../../types";
 import { createDefaultModel } from "../../../dao/common/common.model";
 

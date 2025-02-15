@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
-import { SqlBaseAttributes } from "../../../types";
+import { SqlBaseAttributes, SqlModelInstance, UserAttributes } from "../../../types";
 import UserModel from "../../../dao/user/model/user.model";
-import TypeModel from "../../../dao/type/model/type.model";
+import TypeModel, { TypeAttributes } from "../../../dao/type/model/type.model";
 import { createDefaultModel } from "../../../dao/common/common.model";
 
 // 定义全局设置属性接口
@@ -15,6 +15,8 @@ export interface IssueAttributes extends SqlBaseAttributes {
   issueDate: string; //	问题时间
   userId: string; //	用户 id
   typeId: string; //  所属分类
+  type?: SqlModelInstance<TypeAttributes>;
+  user?: SqlModelInstance<UserAttributes>;
   [key: string]: any;
 }
 
@@ -33,7 +35,7 @@ const IssueModel = createDefaultModel<IssueAttributes>(
     },
     issuePic: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     scanNumber: {
       type: DataTypes.INTEGER,

@@ -5,3 +5,6 @@ export * from "./blogType";
 export * from "./captcha";
 export * from "./demo";
 export * from "./upload";
+export * from "./book";
+export * from "./comment";
+export * from "./interview";

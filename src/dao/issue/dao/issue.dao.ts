@@ -1,18 +1,16 @@
+import UserModel from "../../../dao/user/model/user.model";
 import TypeModel from "../../../dao/type/model/type.model";
-import { FindIssueByPageQuery, SqlModelInstance } from "../../../types";
-import { NotFoundError } from "../../../utils";
+import { FindIssueByPageQuery } from "../../../types";
 import issueModel from "../model/issue.model";
-import IssueModel, { IssueAttributes } from "../model/issue.model";
-import { Op } from "sequelize";
+import { IssueAttributes } from "../model/issue.model";
+import { Op, WhereOptions } from "sequelize";
 
 export interface FindIssueByPageSqlCondition {
-  [Op.or]: {
-    issueTitle?: {
-      [Op.like]: RegExp;
-    };
-    typeId?: string;
-    issueStatus?: boolean;
+  issueTitle?: {
+    [Op.like]: string;
   };
+  typeId?: string;
+  issueStatus?: boolean;
 }
 // issue
 export class IssueDAO {
@@ -33,41 +31,50 @@ export class IssueDAO {
     } = pageInfo;
 
     const pageObj = {
-      currentPage: Number(page),
-      eachPage: Number(limit),
+      page: Number(page),
+      limit: Number(limit),
     };
-
-    const queryConditionOr: FindIssueByPageSqlCondition[] = [];
+    const where: WhereOptions<IssueAttributes> = {
+      [Op.and]: {},
+    };
     if (keyword) {
       // 用户要按照书籍标题进行搜索
-      queryConditionOr[Op.or].push({
+      where[Op.and] = {
+        ...where[Op.and],
         issueTitle: {
-          [Op.like]: new RegExp(keyword, "i"),
+          [Op.like]: `%${keyword}%`,
         },
-      });
+      };
     }
     if (typeId) {
       // 用户要按照分类进行搜索
-      queryConditionOr[Op.or].push({
+      where[Op.and] = {
+        ...where[Op.and],
         typeId,
-      });
+      };
     }
     if (issueStatus != undefined) {
-      queryConditionOr[Op.or].push({ issueStatus });
+      where[Op.and] = {
+        ...where[Op.and],
+        issueStatus: Boolean(issueStatus),
+      };
     }
+    let count;
+    try {
+       count = await issueModel.count({ where });
 
-    const count = await issueModel.count();
-    const totalPage = Math.ceil(count / pageObj.eachPage);
-    const data = await issueModel.findAndCountAll({
-      where: queryConditionOr,
-      order: ["issueDate", "DESC"],
+    } catch (error) {
+      console.log(error);
+            
+    }
+    const totalPage = Math.ceil(count / pageObj.limit);
+    const data = await issueModel.findAll({
+      where,
+      order: [["issueDate", "DESC"]],
       include: [
         {
           model: TypeModel,
-          as: "typeName",
-          where: {
-            typeId,
-          },
+          as: "type",
         },
       ],
       offset: (+page * 1 - 1) * +limit,
@@ -82,7 +89,12 @@ export class IssueDAO {
   }
 
   public async findIssueById(id: string) {
-    return issueModel.findOne({ where: { id } });
+    return issueModel.findOne({
+      where: { id },
+      include: [
+        { model: UserModel, as: "user", attributes: { exclude: ["loginPwd"] } },
+      ],
+    });
   }
 
   public async addIssue(issueInfo: IssueAttributes) {
@@ -90,7 +102,7 @@ export class IssueDAO {
   }
 
   public async deleteIssue(id: string) {
-    return issueModel.findOne({ where: { id } });
+    return issueModel.destroy({ where: { id } });
   }
 
   public async updateIssue(id: string, issueInfo: IssueAttributes) {

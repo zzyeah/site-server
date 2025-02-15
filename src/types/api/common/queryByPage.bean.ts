@@ -1,3 +1,5 @@
+import { CommonRequest } from "./request.bean";
+
 export interface QueryByPageParams {
   /**
    * 分类id，默认-1
@@ -15,5 +17,13 @@ export interface QueryByPageParams {
    * 页码，默认1
    */
   page?: string;
+  /**
+   * 其他参数
+   */
   [property: string]: any;
+}
+
+export interface QueryByPageParamsRequest<T extends QueryByPageParams>
+  extends CommonRequest {
+  query: T;
 }

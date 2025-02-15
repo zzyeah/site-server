@@ -1,8 +1,11 @@
-import { CommonRequest, QueryByPageParams } from "../common";
+import {
+  CommonRequest,
+  QueryByPageParams,
+  QueryByPageParamsRequest,
+} from "../common";
 
 export interface FindIssueByPageQuery extends QueryByPageParams {
-    issueStatus: boolean
+  issueStatus: string; // boolean
 }
-export interface FindIssueByPageRequest extends CommonRequest {
-  query: FindIssueByPageQuery;
-}
+export type FindIssueByPageRequest =
+  QueryByPageParamsRequest<FindIssueByPageQuery>;

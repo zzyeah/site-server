@@ -5,7 +5,7 @@ import {
   ModelStatic,
 } from "sequelize";
 import sequelize from "../dbConnect";
-import { SqlBaseAttributes, SqlModelInstance } from "src/types";
+import { SqlBaseAttributes, SqlModelInstance } from "../../types";
 
 export function createDefaultModel<T extends SqlBaseAttributes>(
   tableName: string,
@@ -18,7 +18,7 @@ export function createDefaultModel<T extends SqlBaseAttributes>(
       id: {
         type: DataTypes.STRING,
         primaryKey: true,
-        // defaultValue: DataTypes.UUIDV4,
+        defaultValue: DataTypes.UUIDV4,
         allowNull: false,
       },
       ...attributes,

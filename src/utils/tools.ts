@@ -40,11 +40,14 @@ const storage = diskStorage({
     console.log("file", file);
 
     // 获取文件名
-    const basename = path.basename(
+    let basename = path.basename(
       file.originalname,
       path.extname(file.originalname)
     );
     console.log("basename", basename);
+    if(/[^\w+]/.test(basename)){
+      basename = 'ZYServer'
+    }
     // 获取后缀名
     const ext = path.extname(file.originalname);
     // 构建新名字
